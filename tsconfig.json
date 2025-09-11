@@ -1,0 +1,29 @@
+// {
+//     "compilerOptions": {
+//       // other options
+//       "jsx": "react",
+//       "baseUrl": "./",
+//       "esModuleInterop": true,
+//       "paths": {
+//         "@/*": ["src/*"]
+//       }
+//     }
+    
+//   }
+
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",          // ✅ Required for import.meta
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "baseUrl": "./",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": ["src"]
+}
