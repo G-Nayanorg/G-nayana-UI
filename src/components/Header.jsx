@@ -126,14 +126,14 @@ const Header = () => {
         {isLoggedIn && user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="ml-auto cursor-pointer">
+              <Avatar className="ml-auto cursor-pointer bg-gray-200">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
                   {user.name ? user.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuContent className="w-56 bg-gray-100 shadow-lg" align="end">
               <DropdownMenuLabel>
                 <div className="flex flex-col">
                   <span className="font-semibold">{user.name}</span>
@@ -142,7 +142,7 @@ const Header = () => {
                   </span>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="border border-gray"/>
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   Profile Settings
