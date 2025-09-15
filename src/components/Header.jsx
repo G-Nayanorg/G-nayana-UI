@@ -8,11 +8,7 @@ import { HamburgerMenu } from "./design/Header";
 import { useEffect, useState } from "react";
 
 // ✅ shadcn/ui components
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,7 +48,7 @@ const Header = () => {
             email: data.email,
             username: data.username,
             avatar: data.avatar_url || "", // fallback if no avatar
-            role:data.role,
+            role: data.role,
           });
         })
         .catch((err) => {
@@ -81,17 +77,28 @@ const Header = () => {
     navigate("/");
   };
 
+  // ✅ Inside your Header component
+
   const navItems = isLoggedIn
     ? [
-      ...navigation.filter((item) => item.title.toLowerCase() !== "login"),
-      { id: "99", title: "Patient Records", url: "/patient-records" },
-    ]
+        ...navigation.filter((item) => item.title.toLowerCase() !== "login"),
+        // { id: "99", title: "Patient Records", url: "/patient-records" },
+        ...(user?.role !== "superadmin"
+          ? [{ id: "99", title: "Patient Records", url: "/patient-records" }]
+          : []),
+
+        // ✅ show this only for superadmin
+        ...(user?.role === "superadmin"
+          ? [{ id: "100", title: "Tenant Patients", url: "/tenant-patients" }]
+          : []),
+      ]
     : navigation;
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full z-50 border-b border-n-2 lg:bg-n-1/90 lg:backdrop-blur-sm ${openNavigation ? "bg-n-1" : "bg-n-1/90 backdrop-blur-sm"
-        }`}
+      className={`fixed top-0 left-0 w-full z-50 border-b border-n-2 lg:bg-n-1/90 lg:backdrop-blur-sm ${
+        openNavigation ? "bg-n-1" : "bg-n-1/90 backdrop-blur-sm"
+      }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
         <a className="block w-[12rem] xl:mr-0" href="/">
@@ -100,8 +107,9 @@ const Header = () => {
 
         {/* Navigation */}
         <nav
-          className={`${openNavigation ? "flex" : "hidden"
-            } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-1 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+          className={`${
+            openNavigation ? "flex" : "hidden"
+          } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-1 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
         >
           <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
             {navItems.map((item) => (
@@ -109,11 +117,13 @@ const Header = () => {
                 key={item.id}
                 to={item.url}
                 onClick={handleClick}
-                className={`block relative font-code text-2xl uppercase text-n-8 transition-colors hover:text-color-1 ${item.onlyMobile ? "lg:hidden" : ""
-                  } px-2 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${item.url === pathname.hash
+                className={`block relative font-code text-2xl uppercase text-n-8 transition-colors hover:text-color-1 ${
+                  item.onlyMobile ? "lg:hidden" : ""
+                } px-2 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
+                  item.url === pathname.hash
                     ? "z-2 lg:text-n-8"
                     : "lg:text-n-8/50"
-                  } lg:leading-5 lg:hover:text-n-8 xl:px-8`}
+                } lg:leading-5 lg:hover:text-n-8 xl:px-8`}
               >
                 {item.title}
               </Link>
@@ -133,7 +143,10 @@ const Header = () => {
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-gray-100 shadow-lg" align="end">
+            <DropdownMenuContent
+              className="w-56 bg-gray-100 shadow-lg"
+              align="end"
+            >
               <DropdownMenuLabel>
                 <div className="flex flex-col">
                   <span className="font-semibold">{user.name}</span>
@@ -142,7 +155,7 @@ const Header = () => {
                   </span>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="border border-gray"/>
+              <DropdownMenuSeparator className="border border-gray" />
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   Profile Settings
@@ -152,10 +165,12 @@ const Header = () => {
                     Dashboard
                   </DropdownMenuItem>
                 )}
-
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-red-500 font-semibold ">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-red-500 font-semibold "
+              >
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

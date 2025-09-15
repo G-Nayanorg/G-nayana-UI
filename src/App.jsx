@@ -20,6 +20,7 @@ import PrivateRoute from "./components/Auth/PrivateRoute";
 import Authmodel from "./components/Auth/Model/Model";
 import PatientLookup from "./components/AdminDashboard/PatientLookup";
 import Profile from "./components/Profile/Profile";
+import TenantsRecords from "./components/TenantsRecords/TenantRecords";
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -110,6 +111,8 @@ const App = () => {
           <Route path="/Authmodel" element={<Authmodel />} />
           <Route path="/patient-search" element={<PatientLookup />} />
           <Route path="/profile" element={<Profile />} />
+
+          <Route path="/tenant-patients" element={<TenantsRecords />} />
         </Routes>
 
         {shouldShowFooter && <Footer />}
