@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const apiBase = import.meta.env.VITE_API_BASE;
+
 const PatientLookup = () => {
   const [compositeId, setCompositeId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ const PatientLookup = () => {
       }
 
       const response = await fetch(
-        `http://localhost:8000/Get_patient_Clinical_and_PREDICTION_data/combined-report/${compositeId}`,
+        `${apiBase}/Get_patient_Clinical_and_PREDICTION_data/combined-report/${compositeId}`,
         {
           method: "GET",
           headers: {
