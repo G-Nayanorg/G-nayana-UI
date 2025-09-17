@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const apiBase = import.meta.env.VITE_API_BASE;
+
 interface User {
   id: number;
   first_name: string;
@@ -38,7 +40,7 @@ const RoleBasedUsers: React.FC<{ role: string }> = ({ role }) => {
           throw new Error("No token found");
         }
         const res = await fetch(
-          `http://localhost:8000/admin/users?role=${role}`,
+          `${apiBase}/admin/users?role=${role}`,
           {
             method: "GET",
             headers: {

@@ -15,6 +15,9 @@ import {
   Legend,
 } from "recharts";
 
+
+const apiBase = import.meta.env.VITE_API_BASE;
+
 const COLORS = [
   "hsl(214 83% 47%)", // blue
   "hsl(158 64% 51%)", // green
@@ -53,7 +56,7 @@ const ChartsSection = () => {
 
         // ✅ API #1: disease distribution
         const res1 = await fetch(
-          "http://localhost:8000/analytics/disease/stages",
+          `${apiBase}/analytics/disease/stages`,
           {
             method: "GET",
             headers: {
@@ -70,7 +73,7 @@ const ChartsSection = () => {
 
         // ✅ API #2: avg confidence
         const res2 = await fetch(
-          "http://localhost:8000/analytics/disease/stages/avg-confidence",
+          `${apiBase}/analytics/disease/stages/avg-confidence`,
           {
             method: "GET",
             headers: {
