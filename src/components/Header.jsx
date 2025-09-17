@@ -169,7 +169,7 @@ const Header = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-red-500 font-semibold "
+                className="text-red-500 font-semibold  hover:border-1 hover:bg-gray-300 rounded px-3 py-1"
               >
                 Logout
               </DropdownMenuItem>
