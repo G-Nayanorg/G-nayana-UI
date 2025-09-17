@@ -15,6 +15,8 @@ import {
   Shield,
 } from "lucide-react";
 
+const apiBase = import.meta.env.VITE_API_BASE;
+
 const Index = () => {
   const [totalPatients, setTotalPatients] = useState<number | null>(null);
   const navigate = useNavigate();

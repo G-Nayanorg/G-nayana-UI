@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 
+
+
 interface UserProfile {
   id: number;
   first_name: string;
@@ -17,6 +19,7 @@ interface UserProfile {
   created_at: string;
   password_last_updated: string;
 }
+const apiBase = import.meta.env.VITE_API_BASE;
 
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -38,7 +41,7 @@ const Profile: React.FC = () => {
         if (!token) throw new Error("No token found");
 
         const res = await fetch(
-          "http://localhost:8000/Get_patient_Clinical_and_PREDICTION_data/profile",
+          `${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`,
           {
             method: "GET",
             headers: {
