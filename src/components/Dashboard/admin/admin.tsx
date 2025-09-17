@@ -8,8 +8,9 @@ import EditPatientModal from "../../PatientDetails/PatientModel";
 import { ReportModal } from "@/components/Analysis/ReportModal";
 
 const apiBase = import.meta.env.VITE_API_BASE;
-const API_URL = `${apiBase}/logs/get_data_from_patient`;
+const API_URL = `${apiBase}/Get_patient_Clinical_and_PREDICTION_data/get_patient_data_clinical`;
 const COMBINED_BASE = `${apiBase}/Get_patient_Clinical_and_PREDICTION_data/combined-report`;
+
 
 
 

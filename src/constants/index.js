@@ -1,4 +1,3 @@
-
 import {
   benefitIcon1,
   benefitIcon2,
@@ -46,7 +45,6 @@ import {
 } from "../assets";
 
 export const navigation = [
-
   // {
   //   id: "0",
   //   title: "Home",
@@ -79,6 +77,11 @@ export const navigation = [
   //   url: "/patient-list",
   // },
   // --- END OF ADDED LINKS ---
+  //  {
+  //   id: "5",
+  //   title: "Tenant-Patients",
+  //   url: "/tenant-patients",
+  // },
   {
     id: "6",
     title: "login",
