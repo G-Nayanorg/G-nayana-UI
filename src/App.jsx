@@ -80,16 +80,17 @@ const App = () => {
   );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Toaster position="top-right" />
 
       {shouldShowHeader && <Header />}
 
-      <div
+      {/* Main Content */}
+      <main
         className={
           shouldAddTopPadding
-            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden"
-            : "overflow-hidden"
+            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden flex-grow"
+            : "overflow-hidden flex-grow"
         }
       >
         <ScrollToHashElement />
@@ -114,12 +115,13 @@ const App = () => {
 
           <Route path="/tenant-patients" element={<TenantsRecords />} />
         </Routes>
+      </main>
 
-        {shouldShowFooter && <Footer />}
-      </div>
+      {/* Footer */}
+      {shouldShowFooter && <Footer />}
 
       <ButtonGradient />
-    </>
+    </div>
   );
 };
 
