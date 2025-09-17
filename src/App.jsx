@@ -20,6 +20,7 @@ import PrivateRoute from "./components/Auth/PrivateRoute";
 import Authmodel from "./components/Auth/Model/Model";
 import PatientLookup from "./components/AdminDashboard/PatientLookup";
 import Profile from "./components/Profile/Profile";
+import TenantsRecords from "./components/TenantsRecords/TenantRecords";
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -79,16 +80,17 @@ const App = () => {
   );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Toaster position="top-right" />
 
       {shouldShowHeader && <Header />}
 
-      <div
+      {/* Main Content */}
+      <main
         className={
           shouldAddTopPadding
-            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden"
-            : "overflow-hidden"
+            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden flex-grow"
+            : "overflow-hidden flex-grow"
         }
       >
         <ScrollToHashElement />
@@ -110,13 +112,16 @@ const App = () => {
           <Route path="/Authmodel" element={<Authmodel />} />
           <Route path="/patient-search" element={<PatientLookup />} />
           <Route path="/profile" element={<Profile />} />
-        </Routes>
 
-        {shouldShowFooter && <Footer />}
-      </div>
+          <Route path="/tenant-patients" element={<TenantsRecords />} />
+        </Routes>
+      </main>
+
+      {/* Footer */}
+      {shouldShowFooter && <Footer />}
 
       <ButtonGradient />
-    </>
+    </div>
   );
 };
 
