@@ -58,7 +58,7 @@ const NavigationButtons = () => {
       title: "Patient Records",
       description: "View and manage all patient data and medical histories",
       icon: Users,
-      onClick: () => window.open("/patient-records", "_blank"),
+      onClick: () => window.open(""),
       variant: "secondary" as const,
     },
     {
