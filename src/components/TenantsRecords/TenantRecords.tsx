@@ -45,7 +45,12 @@ export default function TenantPatients() {
     try {
       const token = getAuthToken();
       const res = await fetch(`${Tenant_API}/tenants`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       });
 
       if (!res.ok) throw new Error("Failed to fetch tenants");
@@ -74,7 +79,14 @@ export default function TenantPatients() {
       const token = getAuthToken();
       const res = await fetch(
         `${Tenant_API}/get_patient_data_clinical?tenant_id=${tenantId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
 
       if (!res.ok) throw new Error("Failed to fetch patients");
@@ -100,7 +112,7 @@ export default function TenantPatients() {
           <div className="mb-6">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline"  className="max-w-screen-lg">
+                <Button variant="outline" className="max-w-screen-lg">
                   {selectedTenant ? selectedTenant.name : "Select Tenant"}
                 </Button>
               </DropdownMenuTrigger>
