@@ -19,16 +19,15 @@ const RoleBasedUsers: React.FC<{ role: string }> = ({ role }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const getAuthToken = () => {
-    return (
-      localStorage.getItem("token") ||
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("authToken")
-    );
-  };
+
+  const getAuthToken = () =>
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
         const token = getAuthToken();
 
@@ -37,21 +36,20 @@ const RoleBasedUsers: React.FC<{ role: string }> = ({ role }) => {
           localStorage.removeItem("access_token");
           localStorage.removeItem("authToken");
           navigate("/"); // redirect to home
-          throw new Error("No token found");
+          return; // stop further execution
         }
-        const res = await fetch(
-          `${apiBase}/admin/users?role=${role}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+
+        const res = await fetch(`${apiBase}/admin/users?role=${role}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!res.ok) {
-          throw new Error(`Error ${res.status}`);
+          console.error(`Error fetching users: ${res.status}`);
+          return;
         }
 
         const data = await res.json();
@@ -64,9 +62,9 @@ const RoleBasedUsers: React.FC<{ role: string }> = ({ role }) => {
     };
 
     fetchUsers();
-  }, [role]);
+  }, [role, navigate]);
 
-  if (loading) return <p>Loading {role} users...</p>;
+  if (loading) return <p className="text-center mt-4">Loading {role} users...</p>;
 
   return (
     <div className="overflow-x-auto bg-white shadow rounded-lg p-4">
