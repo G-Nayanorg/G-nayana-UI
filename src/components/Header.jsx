@@ -39,40 +39,40 @@ const Header = () => {
   // ✅ Check login + fetch profile
   useEffect(() => {
     const token = getAuthToken();
+
     if (!token) {
-      localStorage.clear();
-      navigate("/");
-      return;
+      localStorage.removeItem("token");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("authToken");
+      navigate("/"); // redirect to home
+      throw new Error("No token found");
     }
 
-    fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch profile");
-        return res.json();
+    if (token) {
+      fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+          ...options.headers,
+        },
       })
-      .then((data) => {
-        setUser({
-          name: `${data.first_name} ${data.last_name}`,
-          email: data.email,
-          username: data.username,
-          avatar: data.avatar_url || "",
-          role: data.role,
+        .then((res) => res.json())
+        .then((data) => {
+          setUser({
+            name: `${data.first_name} ${data.last_name}`,
+            email: data.email,
+            username: data.username,
+            avatar: data.avatar_url || "", // fallback if no avatar
+            role: data.role,
+          });
+        })
+        .catch((err) => {
+          console.error("Profile fetch error:", err);
         });
-        setIsLoggedIn(true);
-      })
-      .catch((err) => {
-        console.error("Profile fetch error:", err);
-        localStorage.clear();
-        navigate("/");
-      });
+    }
   }, [pathname]);
 
   const toggleNavigation = () => {
