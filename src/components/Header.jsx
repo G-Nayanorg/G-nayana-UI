@@ -38,21 +38,36 @@ const Header = () => {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          Accept: "application/json",
         },
       })
-        .then((res) => res.json())
+        .then(async (res) => {
+          const contentType = res.headers.get("content-type");
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          if (contentType && contentType.includes("application/json")) {
+            return res.json();
+          } else {
+            const text = await res.text(); // capture the HTML
+            console.error(
+              "⚠️ Non-JSON response from server:",
+              text.slice(0, 200)
+            );
+            throw new Error("Expected JSON but got HTML");
+          }
+        })
         .then((data) => {
           setUser({
             name: `${data.first_name} ${data.last_name}`,
             email: data.email,
             username: data.username,
-            avatar: data.avatar_url || "", // fallback if no avatar
+            avatar: data.avatar_url || "",
             role: data.role,
           });
         })
         .catch((err) => {
-          console.error("Profile fetch error:", err);
+          console.error("Profile fetch error:", err.message);
         });
     }
   }, [pathname]);
@@ -169,7 +184,7 @@ const Header = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-red-500 font-semibold "
+                className="text-red-500 font-semibold  hover:border-1 hover:bg-gray-300 rounded px-3 py-1"
               >
                 Logout
               </DropdownMenuItem>
