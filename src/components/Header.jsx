@@ -26,53 +26,52 @@ const Header = () => {
   const navigate = useNavigate();
   const [openNavigation, setOpenNavigation] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null); // ✅ null until fetched
+  const [user, setUser] = useState(null);
 
-  const getAuthToken = () => {
-    return (
-      localStorage.getItem("token") ||
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("authToken")
-    );
-  };
+  const getAuthToken = () =>
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("authToken");
 
-  // ✅ Check login + fetch profile
   useEffect(() => {
     const token = getAuthToken();
 
     if (!token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("authToken");
-      navigate("/"); // redirect to home
-      throw new Error("No token found");
+      localStorage.clear();
+      navigate("/");
+      return;
     }
 
-    if (token) {
-      fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-          ...options.headers,
-        },
+    fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
       })
-        .then((res) => res.json())
-        .then((data) => {
-          setUser({
-            name: `${data.first_name} ${data.last_name}`,
-            email: data.email,
-            username: data.username,
-            avatar: data.avatar_url || "", // fallback if no avatar
-            role: data.role,
-          });
-        })
-        .catch((err) => {
-          console.error("Profile fetch error:", err);
+      .then((data) => {
+        setUser({
+          name: `${data.first_name} ${data.last_name}`,
+          email: data.email,
+          username: data.username,
+          avatar: data.avatar_url || "",
+          role: data.role,
         });
-    }
+        setIsLoggedIn(true);
+      })
+      .catch((err) => {
+        console.error("Profile fetch error:", err);
+        localStorage.clear();
+        navigate("/");
+      });
+
+    return () => enablePageScroll(); // restore scroll on unmount
   }, [pathname]);
 
   const toggleNavigation = () => {
@@ -90,22 +89,18 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     setIsLoggedIn(false);
+    setUser(null);
     navigate("/");
   };
-
-  // ✅ Inside your Header component
 
   const navItems = isLoggedIn
     ? [
         ...navigation.filter((item) => item.title.toLowerCase() !== "login"),
-        // { id: "99", title: "Patient Records", url: "/patient-records" },
         ...(user?.role !== "superadmin"
           ? [{ id: "99", title: "Patient Records", url: "/patient-records" }]
           : []),
-
-        // ✅ show this only for superadmin
         ...(user?.role === "superadmin"
           ? [{ id: "100", title: "Tenant Patients", url: "/tenant-patients" }]
           : []),
@@ -138,7 +133,7 @@ const Header = () => {
                 className={`block relative font-code text-2xl uppercase text-n-8 transition-colors hover:text-color-1 ${
                   item.onlyMobile ? "lg:hidden" : ""
                 } px-2 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
-                  item.url === pathname.hash
+                  item.url === pathname.pathname
                     ? "z-2 lg:text-n-8"
                     : "lg:text-n-8/50"
                 } lg:leading-5 lg:hover:text-n-8 xl:px-8`}
@@ -150,14 +145,19 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
-        {/* Avatar Menu if logged in */}
+        {/* Avatar Menu */}
         {isLoggedIn && user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="ml-auto cursor-pointer bg-gray-200">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>
-                  {user.name ? user.name.charAt(0) : "U"}
+                  {user.name
+                    ? user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                    : "U"}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -187,7 +187,7 @@ const Header = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-red-500 font-semibold  hover:border-1 hover:bg-gray-300 rounded px-3 py-1"
+                className="text-red-500 font-semibold hover:border-1 hover:bg-gray-300 rounded px-3 py-1"
               >
                 Logout
               </DropdownMenuItem>
