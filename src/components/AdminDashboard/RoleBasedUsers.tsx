@@ -42,8 +42,10 @@ const RoleBasedUsers: React.FC<{ role: string }> = ({ role }) => {
         const res = await fetch(`${apiBase}/admin/users?role=${role}`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
         });
 

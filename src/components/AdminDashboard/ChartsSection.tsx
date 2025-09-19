@@ -54,8 +54,10 @@ const ChartsSection: React.FC = () => {
         const res1 = await fetch(`${apiBase}/analytics/disease/stages`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
         });
         if (!res1.ok) throw new Error(`Error ${res1.status}`);
@@ -67,9 +69,11 @@ const ChartsSection: React.FC = () => {
         // ✅ API #2: avg confidence
         const res2 = await fetch(`${apiBase}/analytics/disease/stages/avg-confidence`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
+         headers: {
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
         });
         if (!res2.ok) throw new Error(`Error ${res2.status}`);
