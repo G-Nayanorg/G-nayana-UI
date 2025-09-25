@@ -33,12 +33,51 @@ const Header = () => {
     localStorage.getItem("access_token") ||
     localStorage.getItem("authToken");
 
+  // useEffect(() => {
+  //   const token = getAuthToken();
+
+  //   if (!token) {
+  //     localStorage.clear();
+  //     navigate("/");
+  //     return;
+  //   }
+
+  //   fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json",
+  //       "ngrok-skip-browser-warning": "true",
+  //     },
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error("Failed to fetch profile");
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       setUser({
+  //         name: `${data.first_name} ${data.last_name}`,
+  //         email: data.email,
+  //         username: data.username,
+  //         avatar: data.avatar_url || "",
+  //         role: data.role,
+  //       });
+  //       setIsLoggedIn(true);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Profile fetch error:", err);
+  //       localStorage.clear();
+  //       navigate("/");
+  //     });
+
+  //   return () => enablePageScroll(); // restore scroll on unmount
+  // }, [pathname]);
+
   useEffect(() => {
     const token = getAuthToken();
 
     if (!token) {
-      localStorage.clear();
-      navigate("/");
       return;
     }
 
@@ -68,11 +107,10 @@ const Header = () => {
       .catch((err) => {
         console.error("Profile fetch error:", err);
         localStorage.clear();
-        navigate("/");
       });
 
-    return () => enablePageScroll(); // restore scroll on unmount
-  }, [pathname]);
+    return () => enablePageScroll();
+  }, []); // run once on mount
 
   const toggleNavigation = () => {
     setOpenNavigation((prev) => {
