@@ -23,7 +23,6 @@ const WelcomeSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const navigate = useNavigate();
@@ -45,10 +44,14 @@ const WelcomeSection = () => {
       throw new Error("No token found");
     }
 
-
     fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
       method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
     })
       .then((res) => {
         console.log("🔹 Fetch response status:", res.status);
@@ -60,7 +63,6 @@ const WelcomeSection = () => {
       })
       .catch((err) => console.error("❌ Fetch user failed:", err));
   }, []);
-
 
   return (
     <div className="mb-8">

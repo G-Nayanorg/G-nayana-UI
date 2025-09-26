@@ -66,11 +66,11 @@ export const navigation = [
     url: "/#roadmap",
   },
   // --- ADDED NEW LINKS HERE ---
-  {
-    id: "4",
-    title: "Register-Patient",
-    url: "/register-patient",
-  },
+  // {
+  //   id: "4",
+  //   title: "Register-Patient",
+  //   url: "/register-patient",
+  // },
   // {
   //   id: "5",
   //   title: "Patient-List",

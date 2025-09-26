@@ -98,10 +98,13 @@ const App = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/register-patient"
-            element={<DiabetesPatientRegister />}
-          />
+          <Route element={<PrivateRoute />}>
+            <Route
+              path="/register-patient"
+              element={<DiabetesPatientRegister />}
+            />
+          </Route>
+
           {/* <Route path="/patient-list" element={<DiabetesPatientList />} /> */}
           <Route path="/Analysis" element={<AnalysisPage />} />
 

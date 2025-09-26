@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
   Bar,
@@ -15,34 +15,30 @@ import {
   Legend,
 } from "recharts";
 
-
 const apiBase = import.meta.env.VITE_API_BASE;
 
 const COLORS = [
-  "hsl(214 83% 47%)", // blue
-  "hsl(158 64% 51%)", // green
-  "hsl(43 89% 58%)", // yellow
-  "hsl(267 57% 52%)", // purple
-  "hsl(12 85% 61%)", // red
-  "hsl(200 70% 50%)", // teal
+  "hsl(214 83% 47%)",
+  "hsl(158 64% 51%)",
+  "hsl(43 89% 58%)",
+  "hsl(267 57% 52%)",
+  "hsl(12 85% 61%)",
+  "hsl(200 70% 50%)",
 ];
 
 const getColor = (index: number) => COLORS[index % COLORS.length];
 
-const ChartsSection = () => {
+const ChartsSection: React.FC = () => {
+  const navigate = useNavigate();
   const [overall, setOverall] = useState<any[]>([]);
   const [hospitals, setHospitals] = useState<any[]>([]);
   const [confidenceStages, setConfidenceStages] = useState<any[]>([]);
   const [hospitalDistribution, setHospitalDistribution] = useState<any[]>([]);
-  const navigate = useNavigate();
 
-  const getAuthToken = () => {
-    return (
-      localStorage.getItem("token") ||
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("authToken")
-    );
-  };
+  const getAuthToken = () =>
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -51,20 +47,19 @@ const ChartsSection = () => {
         if (!token) {
           localStorage.clear();
           navigate("/");
-          throw new Error("No token found");
+          return;
         }
 
         // ✅ API #1: disease distribution
-        const res1 = await fetch(
-          `${apiBase}/analytics/disease/stages`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res1 = await fetch(`${apiBase}/analytics/disease/stages`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!res1.ok) throw new Error(`Error ${res1.status}`);
         const result1 = await res1.json();
         setOverall(result1.overall_distribution);
@@ -72,16 +67,15 @@ const ChartsSection = () => {
         setHospitalDistribution(result1.tenant_wise_distribution);
 
         // ✅ API #2: avg confidence
-        const res2 = await fetch(
-          `${apiBase}/analytics/disease/stages/avg-confidence`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res2 = await fetch(`${apiBase}/analytics/disease/stages/avg-confidence`, {
+          method: "GET",
+         headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!res2.ok) throw new Error(`Error ${res2.status}`);
         const result2 = await res2.json();
         setConfidenceStages(result2.distribution);
@@ -91,9 +85,9 @@ const ChartsSection = () => {
     };
 
     fetchAnalytics();
-  }, []);
+  }, [navigate]);
 
-  // ✅ Custom label renderer
+  // Custom Pie label
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -101,26 +95,19 @@ const ChartsSection = () => {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={12}
-      >
+      <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={12}>
         {`${(percent * 100).toFixed(0)}%`}
       </text>
     );
   };
 
-  // ✅ Flatten hospital data for combined pie
   const hospitalData = hospitals.map((h) => ({
-    name: h.tenant_id || h.hospital_name,
+    name: h.hospital_name || h.tenant_id,
     value: h.total_records,
+    tenant_id: h.tenant_id,
+    hospital_name: h.hospital_name,
   }));
 
-  // ✅ Preprocess for stacked bar chart
   const stackedHospitalData = hospitalDistribution.map((h) => {
     const row: any = { hospital_name: h.hospital_name || h.tenant_id };
     h.distribution.forEach((d: any) => {
@@ -131,7 +118,7 @@ const ChartsSection = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      {/* ✅ Overall Distribution Pie */}
+      {/* Overall Distribution Pie */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
@@ -163,8 +150,8 @@ const ChartsSection = () => {
           </div>
         </CardContent>
       </Card>
-      
-      {/* ✅ Hospital-wise Contribution Pie */}
+
+      {/* Hospital-wise Contribution Pie */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
@@ -183,43 +170,34 @@ const ChartsSection = () => {
                   label={renderCustomLabel}
                   outerRadius={110}
                   dataKey="value"
-                  nameKey="hospital_name" // ✅ use hospital_name
+                  nameKey="name"
                 >
                   {hospitalData.map((entry, index) => (
                     <Cell key={`cell-hospital-${index}`} fill={getColor(index)} />
                   ))}
                 </Pie>
-
-                {/* ✅ Tooltip shows hospital + tenant */}
                 <Tooltip
                   formatter={(value, name, props: any) => {
                     const { tenant_id, hospital_name } = props.payload;
-                    return [
-                      `${value} patients`,
-                      `${hospital_name} (Tenant: ${tenant_id})`,
-                    ];
+                    return [`${value} patients`, `${hospital_name} (Tenant: ${tenant_id})`];
                   }}
                 />
-
-                {/* ✅ Legend only shows squares (no text) */}
                 <Legend
-                  formatter={() => ""} // remove text
+                  formatter={() => ""}
                   payload={hospitalData.map((entry, index) => ({
                     id: entry.name,
                     type: "square",
                     color: getColor(index),
-                    value: "", // empty so only square shows
+                    value: "",
                   }))}
                 />
               </PieChart>
             </ResponsiveContainer>
-
           </div>
         </CardContent>
       </Card>
 
-
-      {/* ✅ Avg Confidence per Stage */}
+      {/* Avg Confidence */}
       <Card className="shadow-md col-span-1 lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-foreground">
@@ -249,7 +227,7 @@ const ChartsSection = () => {
         </CardContent>
       </Card>
 
-      {/* ✅ Hospital-wise Disease Distribution (Stacked Bar) */}
+      {/* Hospital-wise Stacked Bar */}
       {stackedHospitalData.length > 0 && (
         <Card className="shadow-md col-span-1 lg:col-span-2">
           <CardHeader>
@@ -267,12 +245,7 @@ const ChartsSection = () => {
                   <Tooltip />
                   <Legend />
                   {overall.map((stage, index) => (
-                    <Bar
-                      key={stage.stage}
-                      dataKey={stage.stage}
-                      stackId="a"
-                      fill={getColor(index)}
-                    />
+                    <Bar key={stage.stage} dataKey={stage.stage} stackId="a" fill={getColor(index)} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
