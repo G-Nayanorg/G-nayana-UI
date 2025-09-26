@@ -33,47 +33,6 @@ const Header = () => {
     localStorage.getItem("access_token") ||
     localStorage.getItem("authToken");
 
-  // useEffect(() => {
-  //   const token = getAuthToken();
-
-  //   if (!token) {
-  //     localStorage.clear();
-  //     navigate("/");
-  //     return;
-  //   }
-
-  //   fetch(`${apiBase}/Get_patient_Clinical_and_PREDICTION_data/profile`, {
-  //     method: "GET",
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //       "ngrok-skip-browser-warning": "true",
-  //     },
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("Failed to fetch profile");
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       setUser({
-  //         name: `${data.first_name} ${data.last_name}`,
-  //         email: data.email,
-  //         username: data.username,
-  //         avatar: data.avatar_url || "",
-  //         role: data.role,
-  //       });
-  //       setIsLoggedIn(true);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Profile fetch error:", err);
-  //       localStorage.clear();
-  //       navigate("/");
-  //     });
-
-  //   return () => enablePageScroll(); // restore scroll on unmount
-  // }, [pathname]);
-
   useEffect(() => {
     const token = getAuthToken();
 
@@ -136,9 +95,14 @@ const Header = () => {
   const navItems = isLoggedIn
     ? [
         ...navigation.filter((item) => item.title.toLowerCase() !== "login"),
+        ...(user?.role === "superadmin" || "client"
+          ? [{ id: "101", title: "Register-Patient", url: "/register-patient" }]
+          : []),
+
         ...(user?.role !== "superadmin"
           ? [{ id: "99", title: "Patient Records", url: "/patient-records" }]
           : []),
+
         ...(user?.role === "superadmin"
           ? [{ id: "100", title: "Tenant Patients", url: "/tenant-patients" }]
           : []),
