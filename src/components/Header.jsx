@@ -134,7 +134,7 @@ const Header = () => {
                 onClick={handleClick}
                 className={`block relative font-code text-2xl uppercase text-n-8 transition-colors hover:text-color-1 ${
                   item.onlyMobile ? "lg:hidden" : ""
-                } px-2 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
+                } px-6 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
                   item.url === pathname.pathname
                     ? "z-2 lg:text-n-8"
                     : "lg:text-n-8/50"

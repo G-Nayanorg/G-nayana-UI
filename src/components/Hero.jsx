@@ -5,13 +5,13 @@ import GNayanaBot from "@/components/GNayana/GNayanaBot";
 const Hero = () => {
   return (
     <section
-      className="pt-[12rem] -mt-[5.25rem] overflow-hidden"
+      className="pt-[8rem] -mt-[5.25rem] overflow-hidden"
       style={{
         background: "linear-gradient(180deg, #e0f2fe 0%, #ffffff 100%)",
       }}
  >
       <div className="container relative">
-        <div className="relative z-1 max-w-[62rem] mx-auto text-center mb-[3.875rem] md:mb-20 lg:mb-[6.25rem]">
+        <div className="relative z-1 max-w-[62rem] mx-auto text-center md:mb-20 lg:mb-[6.25rem]">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-blue-900">
             <span className="inline-block relative">
               G-NAYANA{" "}

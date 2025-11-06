@@ -45,11 +45,11 @@ import {
 } from "../assets";
 
 export const navigation = [
-  // {
-  //   id: "0",
-  //   title: "Home",
-  //   url: "/",
-  // },
+  {
+    id: "0",
+    title: "Home",
+    url: "/#hero",
+  },
   {
     id: "1",
     title: "DETECTION",
@@ -60,11 +60,11 @@ export const navigation = [
     title: "EFFICIENCY",
     url: "/#efficiency",
   },
-  {
-    id: "3",
-    title: "Roadmap",
-    url: "/#roadmap",
-  },
+  // {
+  //   id: "3",
+  //   title: "Roadmap",
+  //   url: "/#roadmap",
+  // },
   // --- ADDED NEW LINKS HERE ---
   // {
   //   id: "4",

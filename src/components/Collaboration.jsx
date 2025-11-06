@@ -16,14 +16,14 @@ const Collaboration = () => {
   }, []);
 
   return (
-    <Section id="detection" className="overflow-hidden">
+    <Section id="detection" className="overflow-hidden !py-0">
       <div className="container lg:flex lg:items-center lg:gap-12">
         <div className="max-w-[30rem] mb-10 lg:mb-0 lg:flex-1">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 lg:leading-tight text-blue-900">
             AI-Powered Retinal Disease Detection
           </h2>
           
-          <ul className="grid gap-y-5 mb-8 md:mb-11">
+          <ul className="grid gap-y- mb-8 md:mb-11">
             {collabContent.map((item) => (
               <li className="flex items-start" key={item.id}>
                 <img src={check} width={24} height={24} alt="check" className="flex-shrink-0 mt-1" />
