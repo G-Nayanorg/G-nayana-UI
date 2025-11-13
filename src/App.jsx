@@ -8,7 +8,7 @@ import Benefits from "./components/Benefits";
 import Collaboration from "./components/Collaboration";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import Hero from "./components/Hero";
+// import Hero from "./components/Hero";
 // import Roadmap from "./components/Roadmap";
 import DiabetesPatientRegister from "./components/PatientDetails/DiabetesPatientRegister";
 // import DiabetesPatientList from "./components/PatientDetails/DiabetesPatientList";
@@ -24,6 +24,10 @@ import TenantsRecords from "./components/TenantsRecords/TenantRecords";
 import DiabeticRetinopathySection from "./components/DiabeticRetinopathy/DiabeticRetinopathySection";
 import GlaucomaSection from "./components/Glaucoma/GlaucomaSection";
 import AiSolutions from "./components/AiSolutions/AiSolutions";
+import AiHowItWorks from "./components/AiSolutions/AiHowItWorks";
+import AiBenefits from "./components/AiSolutions/AiBenefits";
+import AiUseCases from "./components/AiSolutions/AiUseCases";
+import AiTechnology from "./components/AiSolutions/AiTechnology";
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -45,8 +49,23 @@ const ScrollToHashElement = () => {
 // ✅ Landing Page
 const LandingPage = () => (
   <>
-    <div id="hero">
+    {/* <div id="hero">
       <Hero />
+    </div> */}
+    <div id="ai-solutions">
+      <AiSolutions />
+    </div>
+    <div id="ai-how-it-works">
+      <AiHowItWorks />
+    </div>
+    <div id="ai-benefits">
+      <AiBenefits />
+    </div>
+    <div id="ai-use-cases">
+      <AiUseCases />
+    </div>
+    <div id="ai-technology">
+      <AiTechnology />
     </div>
     {/* <div id="collaboration">
       <Collaboration />
@@ -54,9 +73,6 @@ const LandingPage = () => (
     <div id="benefits">
       <Benefits />
     </div> */}
-    <div id="ai-solutions">
-      <AiSolutions />
-    </div>
     {/* <div id="roadmap">
       <Roadmap />
     </div> */}
@@ -95,7 +111,7 @@ const App = () => {
       <main
         className={
           shouldAddTopPadding
-            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden flex-grow"
+            ? "pt-[5.25rem] lg:pt-[5.75rem] overflow-hidden flex-grow"
             : "overflow-hidden flex-grow"
         }
       >

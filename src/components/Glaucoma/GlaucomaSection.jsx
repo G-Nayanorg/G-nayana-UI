@@ -211,12 +211,12 @@ const GlaucomaSection = () => {
         </div>
         
         {/* Interactive Prediction Demo */}
-        <div className="mt-20">
+        {/* <div className="mt-20">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-purple-900">
             Try Our AI Prediction
           </h2>
           <PredictionShowcase conditionName="Glaucoma" />
-        </div>
+        </div> */}
       </div>
     </Section>
   );
