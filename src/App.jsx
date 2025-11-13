@@ -9,7 +9,7 @@ import Collaboration from "./components/Collaboration";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import Roadmap from "./components/Roadmap";
+// import Roadmap from "./components/Roadmap";
 import DiabetesPatientRegister from "./components/PatientDetails/DiabetesPatientRegister";
 // import DiabetesPatientList from "./components/PatientDetails/DiabetesPatientList";
 import AnalysisPage from "./components/Analysis/Analysis";
@@ -51,9 +51,9 @@ const LandingPage = () => (
     <div id="benefits">
       <Benefits />
     </div>
-    <div id="roadmap">
+    {/* <div id="roadmap">
       <Roadmap />
-    </div>
+    </div> */}
   </>
 );
 
