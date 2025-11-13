@@ -143,6 +143,27 @@ const Header = () => {
                 {item.title}
               </Link>
             ))}
+            {/* AI Solution Link - Desktop */}
+            <Link 
+              to="/#ai-solutions"
+              className="relative font-code uppercase text-n-8 transition-colors hover:text-color-1 lg:text-n-8/50 lg:hover:text-n-8"
+              onClick={handleClick}
+            >
+              AI-SOLUTIONS
+            </Link>
+            
+            {/* AI Solution Link - Mobile */}
+            <Link
+              to="/#ai-solutions"
+              onClick={handleClick}
+              className={`block relative font-code text-2xl uppercase text-n-8 transition-colors hover:text-color-1 lg:hidden px-6 py-2 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
+                "/#ai-solutions" === pathname.pathname
+                  ? "z-2 lg:text-n-8"
+                  : "lg:text-n-8/50"
+              } lg:leading-5 lg:hover:text-n-8 xl:px-8`}
+            >
+              AI Solutions
+            </Link>
           </div>
           <HamburgerMenu />
         </nav>

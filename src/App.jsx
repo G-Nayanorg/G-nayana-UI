@@ -21,6 +21,9 @@ import Authmodel from "./components/Auth/Model/Model";
 import PatientLookup from "./components/AdminDashboard/PatientLookup";
 import Profile from "./components/Profile/Profile";
 import TenantsRecords from "./components/TenantsRecords/TenantRecords";
+import DiabeticRetinopathySection from "./components/DiabeticRetinopathy/DiabeticRetinopathySection";
+import GlaucomaSection from "./components/Glaucoma/GlaucomaSection";
+import AiSolutions from "./components/AiSolutions/AiSolutions";
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -45,11 +48,14 @@ const LandingPage = () => (
     <div id="hero">
       <Hero />
     </div>
-    <div id="collaboration">
+    {/* <div id="collaboration">
       <Collaboration />
     </div>
     <div id="benefits">
       <Benefits />
+    </div> */}
+    <div id="ai-solutions">
+      <AiSolutions />
     </div>
     {/* <div id="roadmap">
       <Roadmap />
@@ -97,26 +103,30 @@ const App = () => {
 
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route element={<PrivateRoute />}>
+          {/* <Route path="/login" element={<Login />} /> */}
+          {/* <Route element={<PrivateRoute />}>
             <Route
               path="/register-patient"
               element={<DiabetesPatientRegister />}
             />
-          </Route>
+          </Route> */}
 
           {/* <Route path="/patient-list" element={<DiabetesPatientList />} /> */}
-          <Route path="/Analysis" element={<AnalysisPage />} />
+          {/* <Route path="/Analysis" element={<AnalysisPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/patient-records" element={<Dashboard />} />
           </Route>
-          <Route path="/dashboard" element={<AdminDashboard />} />
-          <Route path="/Authmodel" element={<Authmodel />} />
+          <Route path="/dashboard" element={<AdminDashboard />} /> */}
+          {/* <Route path="/Authmodel" element={<Authmodel />} />
           <Route path="/patient-search" element={<PatientLookup />} />
           <Route path="/profile" element={<Profile />} />
 
-          <Route path="/tenant-patients" element={<TenantsRecords />} />
+          <Route path="/tenant-patients" element={<TenantsRecords />} /> */}
+          
+          {/* AI Solutions Routes */}
+          <Route path="/diabetic-retinopathy" element={<DiabeticRetinopathySection />} />
+          <Route path="/glaucoma" element={<GlaucomaSection />} />
         </Routes>
       </main>
 
