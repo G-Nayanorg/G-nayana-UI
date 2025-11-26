@@ -35,11 +35,34 @@ const Header = () => {
   // Local base navigation (single source of truth)
   const baseNav = [
     // { id: "home", title: "Home", url: "/" },
-    { id: "ai", title: "AI-Solutions", url: { pathname: "/", hash: "#ai-solutions" } },
-    { id: "dr", title: "Diabetic Retinopathy", url: "/diabetic-retinopathy" },
-    { id: "gl", title: "Glaucoma", url: "/glaucoma" },
+    // { id: "dr", title: "Diabetic Retinopathy", url: "/diabetic-retinopathy" },
+    {
+      id: "hero",
+      title: "Hero",
+      url: { pathname: "/", hash: "#hero" },
+    },
+    {
+      id: "how-it-works",
+      title: "How It Works",
+      url: { pathname: "/", hash: "#ai-model-works" },
+    },
+    {
+      id: "benefits",
+      title: "Benefits",
+      url: { pathname: "/", hash: "#key-benefits" },
+    },
+    {
+      id: "use-cases",
+      title: "Use Cases",
+      url: { pathname: "/", hash: "#ai-model-in-action" },
+    },
+    {
+      id: "technology",
+      title: "Technology",
+      url: { pathname: "/", hash: "#technology" },
+    },
     // { id: "contact", title: "Contact", url: "/contact" },
-    // { id: "login", title: "Login", url: "/login", onlyMobile: false },
+    { id: "login", title: "Login", url: "/login", onlyMobile: false },
   ];
 
   useEffect(() => {
@@ -119,23 +142,38 @@ const Header = () => {
   const navItems = (() => {
     if (!isLoggedIn) return baseNav;
     // clone base and remove Login item for logged in users
-    const filtered = baseNav.filter((it) => String(it.title).toLowerCase() !== "login");
+    const filtered = baseNav.filter(
+      (it) => String(it.title).toLowerCase() !== "login"
+    );
     // role-based additions
     const additions = [];
     if (user?.role === "superadmin" || user?.role === "client") {
-      additions.push({ id: "register-patient", title: "Register-Patient", url: "/register-patient" });
+      additions.push({
+        id: "register-patient",
+        title: "Register-Patient",
+        url: "/register-patient",
+      });
     }
     if (user?.role !== "superadmin") {
-      additions.push({ id: "patient-records", title: "Patient Records", url: "/patient-records" });
+      additions.push({
+        id: "patient-records",
+        title: "Patient Records",
+        url: "/patient-records",
+      });
     }
     if (user?.role === "superadmin") {
-      additions.push({ id: "tenant-patients", title: "Tenant Patients", url: "/tenant-patients" });
+      additions.push({
+        id: "tenant-patients",
+        title: "Tenant Patients",
+        url: "/tenant-patients",
+      });
     }
     return [...filtered, ...additions];
   })();
 
   // helpers for url handling
-  const isObjectUrl = (u) => u && typeof u === "object" && ("pathname" in u || "hash" in u);
+  const isObjectUrl = (u) =>
+    u && typeof u === "object" && ("pathname" in u || "hash" in u);
 
   const normalizeHash = (u) => {
     if (isObjectUrl(u) && u.hash) return u.hash;
@@ -173,7 +211,7 @@ const Header = () => {
      ${onlyMobile ? "lg:hidden" : ""}
      text-n-8 hover:text-color-1
      px-4 py-3
-     lg:px-5 lg:py-6
+     lg:px-5 lg:py-3
      text-lg lg:text-sm lg:font-semibold
      ${isActive ? "text-n-8" : "text-n-8/50"}`;
 
@@ -183,7 +221,7 @@ const Header = () => {
         openNavigation ? "bg-n-1" : "bg-n-1/90 backdrop-blur-sm"
       }`}
     >
-      <div className="flex items-center px-2 lg:px-3.5 xl:px-10 py-3 lg:py-4 w-full">
+      <div className="flex items-center px-2 lg:px-3 xl:px-10 py-3 lg:py-4 w-full">
         <Link className="block w-[12rem] xl:mr-0" to="/">
           <img src={Gnayanlogo} width={60} height={60} alt="G-nayan" />
         </Link>
@@ -215,7 +253,10 @@ const Header = () => {
               const active = isItemActive(itemUrl);
               // build `to` prop: object for anchor/hash links, string otherwise
               const toProp = isObjectUrl(itemUrl)
-                ? { pathname: itemUrl.pathname ?? "/", hash: itemUrl.hash ?? "" }
+                ? {
+                    pathname: itemUrl.pathname ?? "/",
+                    hash: itemUrl.hash ?? "",
+                  }
                 : String(itemUrl || "/");
 
               return (
@@ -257,18 +298,27 @@ const Header = () => {
                   )}
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-gray-100 shadow-lg" align="end">
+              <DropdownMenuContent
+                className="w-56 bg-gray-100 shadow-lg"
+                align="end"
+              >
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
                     <span className="font-semibold">{user.name}</span>
-                    <span className="text-xs text-muted-foreground">{user.email}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {user.email}
+                    </span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="border border-gray" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>Profile Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    Profile Settings
+                  </DropdownMenuItem>
                   {user?.role === "superadmin" && (
-                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>Dashboard</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                      Dashboard
+                    </DropdownMenuItem>
                   )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
