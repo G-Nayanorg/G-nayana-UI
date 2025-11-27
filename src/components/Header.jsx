@@ -223,7 +223,7 @@ const Header = () => {
     >
       <div className="flex items-center px-2 lg:px-3 xl:px-10 py-3 lg:py-4 w-full">
         <Link className="block w-[12rem] xl:mr-0" to="/">
-          <img src={Gnayanlogo} width={60} height={60} alt="G-nayan" />
+          <img src={Gnayanlogo} width={150} height={150} alt="G-nayan" />
         </Link>
 
         {/* Mobile hamburger button (always available on mobile) */}
