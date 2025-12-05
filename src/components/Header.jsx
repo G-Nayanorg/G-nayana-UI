@@ -38,7 +38,7 @@ const Header = () => {
     // { id: "dr", title: "Diabetic Retinopathy", url: "/diabetic-retinopathy" },
     {
       id: "hero",
-      title: "Hero",
+      title: "Home",
       url: { pathname: "/", hash: "#hero" },
     },
     {
