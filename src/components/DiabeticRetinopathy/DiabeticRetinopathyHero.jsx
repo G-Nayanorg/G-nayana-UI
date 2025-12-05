@@ -4,7 +4,7 @@ import GNayanaBot from "../GNayana/GNayanaBot";
 
 const DiabeticRetinopathyHero = () => {
   return (
-    <div className="text-center mb-16  scroll-mt-[5.25rem] lg:scroll-mt-[5.75rem] " id="hero">
+    <div className="text-center mb-16  scroll-mt-[5.25rem] lg:scroll-mt-[5.75rem] " id="home">
       <div className="container relative">
         <div className="relative z-1 max-w-[62rem] mx-auto text-center md:mb-5 ">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold  text-blue-900">

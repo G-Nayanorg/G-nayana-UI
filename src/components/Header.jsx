@@ -39,7 +39,7 @@ const Header = () => {
     {
       id: "hero",
       title: "Home",
-      url: { pathname: "/", hash: "#hero" },
+      url: { pathname: "/", hash: "#home" },
     },
     {
       id: "how-it-works",
