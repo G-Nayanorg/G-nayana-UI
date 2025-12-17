@@ -4,11 +4,9 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import ButtonGradient from "./assets/svg/ButtonGradient";
-import Benefits from "./components/Benefits";
-import Collaboration from "./components/Collaboration";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import Hero from "./components/Hero";
+// import Hero from "./components/Hero";
 // import Roadmap from "./components/Roadmap";
 import DiabetesPatientRegister from "./components/PatientDetails/DiabetesPatientRegister";
 // import DiabetesPatientList from "./components/PatientDetails/DiabetesPatientList";
@@ -21,6 +19,14 @@ import Authmodel from "./components/Auth/Model/Model";
 import PatientLookup from "./components/AdminDashboard/PatientLookup";
 import Profile from "./components/Profile/Profile";
 import TenantsRecords from "./components/TenantsRecords/TenantRecords";
+import DiabeticRetinopathySection from "./components/DiabeticRetinopathy/DiabeticRetinopathySection";
+// import GlaucomaSection from "./components/Glaucoma/GlaucomaSection";
+
+// ✅ Import new components for the four sections
+import DiabeticRetinopathyPage from "./components/DiabeticRetinopathy/DiabeticRetinopathyPage";
+// import AiModelWorksPage from "./components/AiSolutions/AiModelWorksPage";
+// import KeyBenefitsPage from "./components/AiSolutions/KeyBenefitsPage";
+// import AiModelInActionPage from "./components/AiSolutions/AiModelInActionPage";
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -39,23 +45,6 @@ const ScrollToHashElement = () => {
   return null;
 };
 
-// ✅ Landing Page
-const LandingPage = () => (
-  <>
-    <div id="hero">
-      <Hero />
-    </div>
-    <div id="collaboration">
-      <Collaboration />
-    </div>
-    <div id="benefits">
-      <Benefits />
-    </div>
-    {/* <div id="roadmap">
-      <Roadmap />
-    </div> */}
-  </>
-);
 
 const App = () => {
   const location = useLocation();
@@ -89,14 +78,14 @@ const App = () => {
       <main
         className={
           shouldAddTopPadding
-            ? "pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden flex-grow"
+            ? "pt-[4.25rem] lg:pt-[4.75rem] overflow-hidden flex-grow"
             : "overflow-hidden flex-grow"
         }
       >
         <ScrollToHashElement />
 
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<DiabeticRetinopathyPage />} />
           <Route path="/login" element={<Login />} />
           <Route element={<PrivateRoute />}>
             <Route
@@ -117,6 +106,8 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/tenant-patients" element={<TenantsRecords />} />
+          
+ 
         </Routes>
       </main>
 

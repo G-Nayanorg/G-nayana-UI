@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
 import html2pdf from "html2pdf.js";
-import Gnayanlogo from "../../assets/Gnayanalogo.png";
+import Gnayanlogo from "../../assets/Gnayanalogo.svg";
 
 // ---------------- Types ----------------
 interface EyeData {

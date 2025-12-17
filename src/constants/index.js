@@ -45,21 +45,21 @@ import {
 } from "../assets";
 
 export const navigation = [
-  {
-    id: "0",
-    title: "Home",
-    url: "/#hero",
-  },
-  {
-    id: "1",
-    title: "DETECTION",
-    url: "/#detection",
-  },
-  {
-    id: "2",
-    title: "EFFICIENCY",
-    url: "/#efficiency",
-  },
+  // {
+  //   id: "0",
+  //   title: "Home",
+  //   url: "/#hero",
+  // },
+  // {
+  //   id: "1",
+  //   title: "DETECTION",
+  //   url: "/#detection",
+  // },
+  // {
+  //   id: "2",
+  //   title: "EFFICIENCY",
+  //   url: "/#efficiency",
+  // },
   // {
   //   id: "3",
   //   title: "Roadmap",
@@ -82,12 +82,12 @@ export const navigation = [
   //   title: "Tenant-Patients",
   //   url: "/tenant-patients",
   // },
-  {
-    id: "6",
-    title: "login",
-    url: "/login",
-    // onlyMobile: true,
-  },
+  // {
+  //   id: "6",
+  //   title: "login",
+  //   url: "/login",
+  //   // onlyMobile: true,
+  // },
 ];
 
 export const heroIcons = [homeSmile, file02, searchMd, plusSquare];
