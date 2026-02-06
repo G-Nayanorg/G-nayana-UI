@@ -143,25 +143,27 @@ const Header = () => {
     if (!isLoggedIn) return baseNav;
     // clone base and remove Login item for logged in users
     const filtered = baseNav.filter(
-      (it) => String(it.title).toLowerCase() !== "login"
+      (it) => String(it.title).toLowerCase() !== "login",
     );
     // role-based additions
     const additions = [];
-    if (user?.role === "superadmin" || user?.role === "client") {
+    const userRole = user?.role?.toLowerCase() || "";
+
+    if (userRole === "superadmin" || userRole === "client") {
       additions.push({
         id: "register-patient",
         title: "Register-Patient",
         url: "/register-patient",
       });
     }
-    if (user?.role !== "superadmin") {
+    if (userRole !== "superadmin") {
       additions.push({
         id: "patient-records",
         title: "Patient Records",
         url: "/patient-records",
       });
     }
-    if (user?.role === "superadmin") {
+    if (userRole === "superadmin") {
       additions.push({
         id: "tenant-patients",
         title: "Tenant Patients",
@@ -221,7 +223,7 @@ const Header = () => {
         openNavigation ? "bg-n-1" : "bg-n-1/90 backdrop-blur-sm"
       }`}
     >
-      <div className="flex items-center px-2 lg:px-3 xl:px-10 py-3 lg:py-4 w-full">
+      <div className="flex items-center px-2 lg:px-3 xl:px-10 w-full">
         <Link className="block w-[12rem] xl:mr-0" to="/">
           <img src={Gnayanlogo} width={150} height={150} alt="G-nayan" />
         </Link>
@@ -245,7 +247,7 @@ const Header = () => {
           id="site-navigation"
           className={`${
             openNavigation ? "flex" : "hidden"
-          } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-1 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+          } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-1 flex-col lg:flex-row lg:static lg:flex lg:mx-auto lg:bg-transparent`}
         >
           <div className="relative z-20 flex flex-col items-center justify-center m-auto lg:flex-row">
             {navItems.map((item) => {
@@ -276,11 +278,104 @@ const Header = () => {
           <div className="hidden lg:block">
             <HamburgerMenu />
           </div>
+
+          {/* User Profile for Mobile (lg:hidden) */}
+          {isLoggedIn && user && (
+            <div className="lg:hidden w-full mt-auto p-4 border-t border-n-1 bg-n-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-n-2/50 transition-colors outline-none text-left">
+                    <Avatar className="h-10 w-10 border border-n-1">
+                      {user.avatar ? (
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                      ) : (
+                        <AvatarFallback className="bg-gray-200 text-gray-700 font-bold">
+                          {user.name
+                            ? user.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                            : "U"}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="font-semibold text-n-8 truncate">
+                        {user.name}
+                      </span>
+                      <span className="text-xs text-n-8/60 truncate">
+                        Click to view menu
+                      </span>
+                    </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-n-8/50"
+                    >
+                      <path d="m18 15-6-6-6 6" />
+                    </svg>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-[calc(100vw-2rem)] mb-2 bg-white shadow-xl border border-n-2 rounded-xl z-50"
+                  align="center"
+                  side="top"
+                  sideOffset={10}
+                >
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{user.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {user.email}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigate("/profile");
+                        handleClick();
+                      }}
+                      className="cursor-pointer py-3"
+                    >
+                      Profile Settings
+                    </DropdownMenuItem>
+                    {user?.role?.toLowerCase() === "superadmin" && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          navigate("/dashboard");
+                          handleClick();
+                        }}
+                        className="cursor-pointer py-3"
+                      >
+                        Dashboard
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-red-500 font-semibold cursor-pointer py-3 hover:bg-red-50 focus:bg-red-50"
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </nav>
 
-        {/* Avatar Menu (desktop & mobile) */}
+        {/* Avatar Menu (desktop only: hidden lg:block) */}
         {isLoggedIn && user ? (
-          <div className="ml-4">
+          <div className="ml-4 hidden lg:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer bg-gray-200">
@@ -315,7 +410,7 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     Profile Settings
                   </DropdownMenuItem>
-                  {user?.role === "superadmin" && (
+                  {user?.role?.toLowerCase() === "superadmin" && (
                     <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                       Dashboard
                     </DropdownMenuItem>

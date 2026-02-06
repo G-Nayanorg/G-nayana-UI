@@ -1,32 +1,37 @@
 // src/App.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-// import Hero from "./components/Hero";
-// import Roadmap from "./components/Roadmap";
-import DiabetesPatientRegister from "./components/PatientDetails/DiabetesPatientRegister";
-// import DiabetesPatientList from "./components/PatientDetails/DiabetesPatientList";
-import AnalysisPage from "./components/Analysis/Analysis";
-import Login from "./components/Auth/login/login";
-import Dashboard from "./components/Dashboard/admin/admin";
-import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
 import PrivateRoute from "./components/Auth/PrivateRoute";
-import Authmodel from "./components/Auth/Model/Model";
-import PatientLookup from "./components/AdminDashboard/PatientLookup";
-import Profile from "./components/Profile/Profile";
-import TenantsRecords from "./components/TenantsRecords/TenantRecords";
-import DiabeticRetinopathySection from "./components/DiabeticRetinopathy/DiabeticRetinopathySection";
-// import GlaucomaSection from "./components/Glaucoma/GlaucomaSection";
+import LoadingSpinner from "./components/ui/LoadingSpinner";
 
-// ✅ Import new components for the four sections
-import DiabeticRetinopathyPage from "./components/DiabeticRetinopathy/DiabeticRetinopathyPage";
-// import AiModelWorksPage from "./components/AiSolutions/AiModelWorksPage";
-// import KeyBenefitsPage from "./components/AiSolutions/KeyBenefitsPage";
-// import AiModelInActionPage from "./components/AiSolutions/AiModelInActionPage";
+// ✅ Lazy load all route components for better performance
+const DiabetesPatientRegister = React.lazy(
+  () => import("./components/PatientDetails/DiabetesPatientRegister"),
+);
+const AnalysisPage = React.lazy(() => import("./components/Analysis/Analysis"));
+const Login = React.lazy(() => import("./components/Auth/login/login"));
+const Dashboard = React.lazy(
+  () => import("./components/Dashboard/admin/admin"),
+);
+const AdminDashboard = React.lazy(
+  () => import("./components/AdminDashboard/AdminDashboard"),
+);
+const Authmodel = React.lazy(() => import("./components/Auth/Model/Model"));
+const PatientLookup = React.lazy(
+  () => import("./components/AdminDashboard/PatientLookup"),
+);
+const Profile = React.lazy(() => import("./components/Profile/Profile"));
+const TenantsRecords = React.lazy(
+  () => import("./components/TenantsRecords/TenantRecords"),
+);
+const DiabeticRetinopathyPage = React.lazy(
+  () => import("./components/DiabeticRetinopathy/DiabeticRetinopathyPage"),
+);
 
 // ✅ Scroll to hash utility
 const ScrollToHashElement = () => {
@@ -44,7 +49,6 @@ const ScrollToHashElement = () => {
   }, [location]);
   return null;
 };
-
 
 const App = () => {
   const location = useLocation();
@@ -65,7 +69,7 @@ const App = () => {
 
   // ✅ Remove padding for login route
   const shouldAddTopPadding = !hideHeaderFooterRoutes.includes(
-    location.pathname
+    location.pathname,
   );
 
   return (
@@ -84,31 +88,31 @@ const App = () => {
       >
         <ScrollToHashElement />
 
-        <Routes>
-          <Route path="/" element={<DiabeticRetinopathyPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route element={<PrivateRoute />}>
-            <Route
-              path="/register-patient"
-              element={<DiabetesPatientRegister />}
-            />
-          </Route>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<DiabeticRetinopathyPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route element={<PrivateRoute />}>
+              <Route
+                path="/register-patient"
+                element={<DiabetesPatientRegister />}
+              />
+            </Route>
 
-          {/* <Route path="/patient-list" element={<DiabetesPatientList />} /> */}
-          <Route path="/Analysis" element={<AnalysisPage />} />
+            {/* <Route path="/patient-list" element={<DiabetesPatientList />} /> */}
+            <Route path="/Analysis" element={<AnalysisPage />} />
 
-          <Route element={<PrivateRoute />}>
-            <Route path="/patient-records" element={<Dashboard />} />
-          </Route>
-          <Route path="/dashboard" element={<AdminDashboard />} />
-          <Route path="/Authmodel" element={<Authmodel />} />
-          <Route path="/patient-search" element={<PatientLookup />} />
-          <Route path="/profile" element={<Profile />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/patient-records" element={<Dashboard />} />
+            </Route>
+            <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/Authmodel" element={<Authmodel />} />
+            <Route path="/patient-search" element={<PatientLookup />} />
+            <Route path="/profile" element={<Profile />} />
 
-          <Route path="/tenant-patients" element={<TenantsRecords />} />
-          
- 
-        </Routes>
+            <Route path="/tenant-patients" element={<TenantsRecords />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}

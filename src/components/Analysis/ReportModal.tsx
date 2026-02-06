@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
 import html2pdf from "html2pdf.js";
-import Gnayanlogo from "../../assets/Gnayanalogo.svg";
+import Gnayanlogo from "../../assets/Gnayanalogo.png";
 
 // ---------------- Types ----------------
 interface EyeData {
@@ -240,7 +240,7 @@ const PDFReport = ({
                   {rightEyeData?.Stage ? (
                     <span
                       className={`font-bold ${getSeverityColor(
-                        rightEyeData.Stage
+                        rightEyeData.Stage,
                       )}`}
                     >
                       {rightEyeData.Stage}
@@ -253,7 +253,7 @@ const PDFReport = ({
                   {leftEyeData?.Stage ? (
                     <span
                       className={`font-bold ${getSeverityColor(
-                        leftEyeData.Stage
+                        leftEyeData.Stage,
                       )}`}
                     >
                       {leftEyeData.Stage}
@@ -423,7 +423,7 @@ export function ReportModal(props: ReportModalProps) {
    * - Returns objectURL or undefined
    */
   const resolveImageCandidate = async (
-    candidate?: string | null
+    candidate?: string | null,
   ): Promise<string | undefined> => {
     if (!candidate) return undefined;
 
@@ -436,7 +436,7 @@ export function ReportModal(props: ReportModalProps) {
         const filename = parts[parts.length - 1]; // e.g. P002-V001/left_image.jpg
         if (filename) {
           const fileEndpoint = `${IMAGE_ENDPOINT}/${encodeURIComponent(
-            filename
+            filename,
           )}`;
           const obj = await fetchUrlToObjectUrl(fileEndpoint);
           if (obj) return obj;
@@ -569,7 +569,7 @@ export function ReportModal(props: ReportModalProps) {
   const rightEyeData = combinedReport?.right_eye ?? legacyProps.rightEyeData;
 
   const canRenderReport = Boolean(
-    leftEyeData || rightEyeData || leftEyeImage || rightEyeImage
+    leftEyeData || rightEyeData || leftEyeImage || rightEyeImage,
   );
 
   const targetRef = useRef<HTMLDivElement | null>(null);
