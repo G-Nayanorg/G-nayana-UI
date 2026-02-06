@@ -63,6 +63,12 @@ interface FormErrors {
   num_visits?: string;
   visits_id?: number | string;
   assigned_doctor?: string;
+  tenant_id?: string;
+}
+
+interface Tenant {
+  name: string;
+  id: string;
 }
 
 const DiabetesPatientRegister: React.FC = () => {
@@ -71,6 +77,7 @@ const DiabetesPatientRegister: React.FC = () => {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
   const totalSteps = 4;
 
   const [registerMode, setRegisterMode] = useState<"new" | "op">("new");
@@ -93,7 +100,56 @@ const DiabetesPatientRegister: React.FC = () => {
     // Hospital_name: "",
     assigned_doctor: "",
     Date_of_registration: new Date(),
+    tenant_id: "",
   });
+
+  const getAuthToken = () =>
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("authToken");
+
+  // Fetch tenants
+  const fetchTenants = async () => {
+    try {
+      const token = getAuthToken();
+      const res = await fetch(
+        `${apiBase}/Get_patient_Clinical_and_PREDICTION_data/tenants`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        },
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch tenants");
+      const data = await res.json();
+
+      if (data?.tenants) {
+        const parsed: Tenant[] = data.tenants.map((t: string) => {
+          const idx = t.lastIndexOf("_");
+          return {
+            name: t.substring(0, idx),
+            id: t,
+          };
+        });
+        setTenants(parsed);
+      }
+    } catch (err) {
+      console.warn(
+        "Could not fetch tenants (likely insufficient permissions or network error)",
+        err,
+      );
+      // Suppress toast: clients don't need to see this error if they don't have access
+      // toast.error("Failed to load tenants");
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTenants();
+  }, []);
 
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -299,7 +355,7 @@ const DiabetesPatientRegister: React.FC = () => {
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       toast.error(
-        "Please fill in all required fields correctly across all steps."
+        "Please fill in all required fields correctly across all steps.",
       );
 
       const step1Fields: (keyof FormErrors)[] = [
@@ -349,10 +405,10 @@ const DiabetesPatientRegister: React.FC = () => {
       HbA1c_Level: parseOrUndefined(formData.HbA1c_Level),
       Fasting_Blood_Glucose: parseOrUndefined(formData.Fasting_Blood_Glucose),
       Blood_Pressure_Systolic: parseOrUndefined(
-        formData.Blood_Pressure_Systolic
+        formData.Blood_Pressure_Systolic,
       ),
       Blood_Pressure_Diastolic: parseOrUndefined(
-        formData.Blood_Pressure_Diastolic
+        formData.Blood_Pressure_Diastolic,
       ),
       Cholesterol: parseOrUndefined(formData.Cholesterol),
       BMI: parseOrUndefined(formData.BMI),
@@ -432,7 +488,7 @@ const DiabetesPatientRegister: React.FC = () => {
         if (data?.identifiers?.patient_id) {
           localStorage.setItem(
             "patient_id",
-            String(data.identifiers.patient_id)
+            String(data.identifiers.patient_id),
           );
         } else if (data?.patient_id) {
           localStorage.setItem("patient_id", String(data.patient_id));
@@ -501,34 +557,34 @@ const DiabetesPatientRegister: React.FC = () => {
   ];
 
   const StepperContent = () => (
-    <div className="space-y-4">
-      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div className="flex items-center gap-3">
+    <div className="space-y-2">
+      <div className="p-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center gap-2">
           <div className="p-2 bg-blue-600 rounded-lg">
-            <Shield className="h-6 w-6 text-white" />
+            <Shield className="h-5 w-5 text-white" />
           </div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Patient Registration
           </h1>
         </div>
-        <p className="text-gray-600 text-sm mt-2">
+        <p className="text-gray-600 text-xs mt-1">
           Complete all steps to register
         </p>
       </div>
-      <div className="p-4 border-b border-gray-100 bg-white">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm font-medium text-gray-700">
+      <div className="p-3 border-b border-gray-100 bg-white">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs font-medium text-gray-700">Progress</span>
+          <span className="text-xs font-medium text-gray-700">
             {Math.round(progressPercentage)}%
           </span>
         </div>
 
         <Progress
           value={progressPercentage}
-          className="h-2.5 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-600 bg-gray-200 rounded-full"
+          className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-600 bg-gray-200 rounded-full"
         />
       </div>
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-2">
         {steps.map((step) => {
           const Icon = step.icon;
           const isActive = currentStep === step.id;
@@ -541,90 +597,57 @@ const DiabetesPatientRegister: React.FC = () => {
                 setSidebarOpen(false);
               }}
               className={cn(
-                "flex items-start p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 border border-gray-100",
-                isActive && "bg-blue-50 border-blue-200 shadow-sm",
-                isCompleted && "bg-green-50 border-green-200"
+                "flex items-start p-3 rounded-xl cursor-pointer transition-all duration-300 hover:bg-white hover:shadow-md border border-transparent",
+                isActive &&
+                  "bg-white border-blue-200 shadow-md ring-1 ring-blue-100",
+                isCompleted && "bg-green-50/50 border-green-200",
+                !isActive && !isCompleted && "hover:bg-gray-50 border-gray-100",
               )}
             >
               <div
                 className={cn(
-                  "flex items-center justify-center w-10 h-10 rounded-full mr-4 transition-all duration-200",
+                  "flex items-center justify-center w-8 h-8 rounded-full mr-3 transition-all duration-200",
                   isActive && "bg-blue-600 text-white shadow-lg scale-110",
                   isCompleted && "bg-green-600 text-white",
-                  !isActive && !isCompleted && "bg-gray-200 text-gray-600"
+                  !isActive && !isCompleted && "bg-gray-200 text-gray-600",
                 )}
               >
                 {isCompleted && !isActive ? (
-                  <Check className="h-5 w-5" />
+                  <Check className="h-4 w-4" />
                 ) : (
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <h3
                   className={cn(
-                    "text-base font-semibold transition-colors duration-200",
+                    "text-sm font-semibold transition-colors duration-200",
                     isActive && "text-blue-900",
                     isCompleted && "text-green-900",
-                    !isActive && !isCompleted && "text-gray-700"
+                    !isActive && !isCompleted && "text-gray-700",
                   )}
                 >
                   {step.title}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">{step.description}</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {step.description}
+                </p>
               </div>
-              <div className={cn(
-                "text-xs px-2 py-1 rounded-full",
-                isActive ? "bg-blue-100 text-blue-800" :
-                isCompleted ? "bg-green-100 text-green-800" :
-                "bg-gray-100 text-gray-500"
-              )}>
+              <div
+                className={cn(
+                  "text-[10px] px-1.5 py-0.5 rounded-full",
+                  isActive
+                    ? "bg-blue-100 text-blue-800"
+                    : isCompleted
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-500",
+                )}
+              >
                 {step.id}/4
               </div>
             </div>
           );
         })}
-      </div>
-
-      {/* Avatar dropdown at the bottom of the sidebar */}
-      <div className="p-4 border-t border-gray-100 bg-white">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full flex items-center justify-start gap-3">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="h-4 w-4 text-blue-600" />
-              </div>
-              <span>Account</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-full">
-            <DropdownMenuItem onClick={() => navigate('/')}>
-              <Building2 className="h-4 w-4 mr-2" />
-              Home
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-              <Activity className="h-4 w-4 mr-2" />
-              Dashboard
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/patients')}>
-              <User className="h-4 w-4 mr-2" />
-              Patients
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/analysis')}>
-              <Heart className="h-4 w-4 mr-2" />
-              Analysis
-            </DropdownMenuItem>
-            <hr className="my-1" />
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
-              <UserCheck className="h-4 w-4 mr-2" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600 focus:bg-red-50">
-              <User className="h-4 w-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </div>
   );
@@ -633,19 +656,21 @@ const DiabetesPatientRegister: React.FC = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* NEW: Register Mode Toggle */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
-              <div className="text-sm font-medium text-gray-700 mb-3">Registration Type:</div>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-100">
+              <div className="text-sm font-medium text-gray-700 mb-2">
+                Registration Type:
+              </div>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setRegisterMode("new")}
                   className={cn(
-                    "px-4 py-3 rounded-lg border transition-all duration-200 flex items-center gap-2 min-w-[140px] text-center",
+                    "px-3 py-2 rounded-lg border transition-all duration-200 flex items-center gap-2 min-w-[120px] text-center text-sm",
                     registerMode === "new"
                       ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                      : "bg-white text-gray-700 hover:bg-blue-50"
+                      : "bg-white text-gray-700 hover:bg-blue-50",
                   )}
                 >
                   <User className="h-4 w-4 mx-auto" />
@@ -658,7 +683,7 @@ const DiabetesPatientRegister: React.FC = () => {
                     "px-4 py-3 rounded-lg border transition-all duration-200 flex items-center gap-2 min-w-[140px] text-center",
                     registerMode === "op"
                       ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
-                      : "bg-white text-gray-700 hover:bg-indigo-50"
+                      : "bg-white text-gray-700 hover:bg-indigo-50",
                   )}
                 >
                   <FileText className="h-4 w-4 mx-auto" />
@@ -672,7 +697,7 @@ const DiabetesPatientRegister: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-5">
+            <div className="grid grid-cols-1 gap-4">
               {/* patient_id input shows only for OP mode */}
               {registerMode === "op" && (
                 <div className="space-y-2">
@@ -690,8 +715,9 @@ const DiabetesPatientRegister: React.FC = () => {
                     onChange={handleChange}
                     placeholder="Enter existing patient ID (numeric)"
                     className={cn(
-                      "transition-all duration-200 h-12",
-                      errors.patient_id && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      "transition-all duration-200 h-10 bg-gray-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+                      errors.patient_id &&
+                        "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                     )}
                   />
                   {errors.patient_id && (
@@ -717,8 +743,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200 h-12",
-                    errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                    "transition-all duration-200 h-10 bg-gray-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+                    errors.name &&
+                      "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                   )}
                   placeholder="Enter patient's full name"
                 />
@@ -730,7 +757,7 @@ const DiabetesPatientRegister: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label
                     htmlFor="age"
@@ -747,8 +774,9 @@ const DiabetesPatientRegister: React.FC = () => {
                     onChange={handleChange}
                     step="1"
                     className={cn(
-                      "transition-all duration-200 h-12",
-                      errors.age && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      "transition-all duration-200 h-10 bg-gray-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+                      errors.age &&
+                        "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                     )}
                     placeholder="Enter age in years"
                   />
@@ -774,12 +802,15 @@ const DiabetesPatientRegister: React.FC = () => {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full h-12 px-3 py-2 rounded-lg border border-input bg-background text-sm shadow-sm flex items-center justify-between",
+                            "w-full h-10 px-3 py-2 rounded-lg border border-input text-sm shadow-sm flex items-center justify-between transition-all duration-200 bg-gray-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
                             !formData.gender && "text-muted-foreground",
-                            errors.gender && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                            errors.gender &&
+                              "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                           )}
                         >
-                          <span className="truncate">{formData.gender || "Select gender"}</span>
+                          <span className="truncate">
+                            {formData.gender || "Select gender"}
+                          </span>
                           <ChevronDown className="h-4 w-4 opacity-50 ml-2 flex-shrink-0" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -825,9 +856,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.mobile_number}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200 h-12",
+                    "transition-all duration-200 h-10 bg-gray-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
                     errors.mobile_number &&
-                      "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                   )}
                   placeholder="Enter mobile number"
                 />
@@ -844,16 +875,20 @@ const DiabetesPatientRegister: React.FC = () => {
 
       case 2:
         return (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
-              <div className="flex items-center gap-2 mb-3">
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-xl border border-green-100">
+              <div className="flex items-center gap-2 mb-2">
                 <Stethoscope className="h-5 w-5 text-green-600" />
-                <h3 className="text-lg font-semibold text-gray-800">Clinical Data</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Clinical Data
+                </h3>
               </div>
-              <p className="text-sm text-gray-600">Please enter accurate medical test results</p>
+              <p className="text-sm text-gray-600">
+                Please enter accurate medical test results
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 {
                   id: "HbA1c_Level",
@@ -907,9 +942,9 @@ const DiabetesPatientRegister: React.FC = () => {
                     value={formData[id as keyof typeof formData] as string}
                     onChange={handleChange}
                     className={cn(
-                      "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                      "transition-all duration-200 h-10 bg-gray-50/50 hover:bg-white hover:border-green-300 focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20",
                       errors[id as keyof FormErrors] &&
-                        "border-red-500 focus:border-red-500 focus:ring-red-500"
+                        "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/50",
                     )}
                     placeholder={`Enter ${label.toLowerCase()}`}
                   />
@@ -938,9 +973,9 @@ const DiabetesPatientRegister: React.FC = () => {
                       onChange={handleChange}
                       placeholder="Systolic"
                       className={cn(
-                        "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                        "transition-all duration-200 h-10 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
                         errors.Blood_Pressure_Systolic &&
-                          "border-red-500 focus:border-red-500 focus:ring-red-500"
+                          "border-red-500 focus:border-red-500 focus:ring-red-500",
                       )}
                     />
                     {errors.Blood_Pressure_Systolic && (
@@ -959,9 +994,9 @@ const DiabetesPatientRegister: React.FC = () => {
                       onChange={handleChange}
                       placeholder="Diastolic"
                       className={cn(
-                        "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                        "transition-all duration-200 h-10 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
                         errors.Blood_Pressure_Diastolic &&
-                          "border-red-500 focus:border-red-500 focus:ring-red-500"
+                          "border-red-500 focus:border-red-500 focus:ring-red-500",
                       )}
                     />
                     {errors.Blood_Pressure_Diastolic && (
@@ -975,7 +1010,7 @@ const DiabetesPatientRegister: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label
                   htmlFor="Duration_of_Diabetes"
@@ -992,9 +1027,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.Duration_of_Diabetes}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                    "transition-all duration-200 h-10 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
                     errors.Duration_of_Diabetes &&
-                      "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      "border-red-500 focus:border-red-500 focus:ring-red-500",
                   )}
                   placeholder="Years with diabetes"
                 />
@@ -1018,7 +1053,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full h-12 justify-between text-left font-normal transition-all duration-200 hover:border-green-300 flex items-center"
+                      className="w-full h-10 justify-between text-left font-normal transition-all duration-200 hover:border-green-300 flex items-center"
                     >
                       <span className="truncate">{formData.Visual_Acuity}</span>
                       <ChevronDown className="h-4 w-4 opacity-50 flex-shrink-0 ml-2" />
@@ -1039,7 +1074,7 @@ const DiabetesPatientRegister: React.FC = () => {
                         >
                           {option}
                         </DropdownMenuItem>
-                      )
+                      ),
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -1054,12 +1089,16 @@ const DiabetesPatientRegister: React.FC = () => {
             <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-100">
               <div className="flex items-center gap-2 mb-3">
                 <Building2 className="h-5 w-5 text-purple-600" />
-                <h3 className="text-lg font-semibold text-gray-800">Administrative Details</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Administrative Details
+                </h3>
               </div>
-              <p className="text-sm text-gray-600">Hospital and registration information</p>
+              <p className="text-sm text-gray-600">
+                Hospital and registration information
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-5">
+            <div className="grid grid-cols-1 gap-4">
               {/* <div className="space-y-2">
                 <label
                   htmlFor="Hospital_name"
@@ -1103,10 +1142,11 @@ const DiabetesPatientRegister: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full h-12 justify-start text-left font-normal transition-all duration-200",
+                        "w-full h-10 justify-start text-left font-normal transition-all duration-200",
                         !formData.Date_of_registration &&
                           "text-muted-foreground",
-                        errors.Date_of_registration && "border-red-500 focus:ring-red-500"
+                        errors.Date_of_registration &&
+                          "border-red-500 focus:ring-red-500",
                       )}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
@@ -1159,9 +1199,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.assigned_doctor}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200 h-12",
+                    "transition-all duration-200 h-10",
                     errors.assigned_doctor &&
-                      "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      "border-red-500 focus:border-red-500 focus:ring-red-500",
                   )}
                   placeholder="Enter doctor's name"
                 />
@@ -1182,9 +1222,13 @@ const DiabetesPatientRegister: React.FC = () => {
             <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100">
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle className="h-5 w-5 text-orange-600" />
-                <h3 className="text-lg font-semibold text-gray-800">Review & Submit</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Review & Submit
+                </h3>
               </div>
-              <p className="text-sm text-gray-600">Please review all information before submitting</p>
+              <p className="text-sm text-gray-600">
+                Please review all information before submitting
+              </p>
             </div>
 
             <div className="space-y-5">
@@ -1221,50 +1265,82 @@ const DiabetesPatientRegister: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-gray-700">HbA1c:</span>
-                    <span>{formData.HbA1c_Level ? `${formData.HbA1c_Level}%` : "N/A"}</span>
+                    <span>
+                      {formData.HbA1c_Level
+                        ? `${formData.HbA1c_Level}%`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Fasting Glucose:</span>
-                    <span>{formData.Fasting_Blood_Glucose
-                      ? `${formData.Fasting_Blood_Glucose} mg/dL`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Fasting Glucose:
+                    </span>
+                    <span>
+                      {formData.Fasting_Blood_Glucose
+                        ? `${formData.Fasting_Blood_Glucose} mg/dL`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Systolic BP:</span>
-                    <span>{formData.Blood_Pressure_Systolic
-                      ? `${formData.Blood_Pressure_Systolic} mmHg`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Systolic BP:
+                    </span>
+                    <span>
+                      {formData.Blood_Pressure_Systolic
+                        ? `${formData.Blood_Pressure_Systolic} mmHg`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Diastolic BP:</span>
-                    <span>{formData.Blood_Pressure_Diastolic
-                      ? `${formData.Blood_Pressure_Diastolic} mmHg`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Diastolic BP:
+                    </span>
+                    <span>
+                      {formData.Blood_Pressure_Diastolic
+                        ? `${formData.Blood_Pressure_Diastolic} mmHg`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Cholesterol:</span>
-                    <span>{formData.Cholesterol
-                      ? `${formData.Cholesterol} mg/dL`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Cholesterol:
+                    </span>
+                    <span>
+                      {formData.Cholesterol
+                        ? `${formData.Cholesterol} mg/dL`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-gray-700">BMI:</span>
-                    <span>{formData.BMI ? `${formData.BMI} kg/m²` : "N/A"}</span>
+                    <span>
+                      {formData.BMI ? `${formData.BMI} kg/m²` : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Albuminuria:</span>
-                    <span>{formData.Albuminuria
-                      ? `${formData.Albuminuria} mg/dL`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Albuminuria:
+                    </span>
+                    <span>
+                      {formData.Albuminuria
+                        ? `${formData.Albuminuria} mg/dL`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Diabetes Duration:</span>
-                    <span>{formData.Duration_of_Diabetes
-                      ? `${formData.Duration_of_Diabetes} years`
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Diabetes Duration:
+                    </span>
+                    <span>
+                      {formData.Duration_of_Diabetes
+                        ? `${formData.Duration_of_Diabetes} years`
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Visual Acuity:</span>
+                    <span className="font-medium text-gray-700">
+                      Visual Acuity:
+                    </span>
                     <span>{formData.Visual_Acuity || "N/A"}</span>
                   </div>
                 </div>
@@ -1277,38 +1353,30 @@ const DiabetesPatientRegister: React.FC = () => {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Assigned Doctor:</span>
+                    <span className="font-medium text-gray-700">Tenant:</span>
+                    <span>
+                      {tenants.find((t) => t.id === formData.tenant_id)?.name ||
+                        "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">
+                      Assigned Doctor:
+                    </span>
                     <span>{formData.assigned_doctor || "N/A"}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700">Registration Date:</span>
-                    <span>{formData.Date_of_registration
-                      ? format(formData.Date_of_registration, "PPP")
-                      : "N/A"}</span>
+                    <span className="font-medium text-gray-700">
+                      Registration Date:
+                    </span>
+                    <span>
+                      {formData.Date_of_registration
+                        ? format(formData.Date_of_registration, "PPP")
+                        : "N/A"}
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center justify-center p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl mt-6">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 disabled:transform-none disabled:opacity-50 h-12"
-                onClick={handleSubmit}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-5 w-5 mr-2" />
-                    Register Patient
-                  </>
-                )}
-              </Button>
             </div>
           </div>
         );
@@ -1325,9 +1393,10 @@ const DiabetesPatientRegister: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="flex flex-col md:flex-row h-screen w-full">
-        <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="flex flex-col md:flex-row w-full h-full">
+        {/* Mobile Header - Removed 'fixed' and added top margin to clear global navbar overlap */}
+        <div className="md:hidden w-full bg-white shadow-sm border-b border-gray-200 mt-14">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-blue-600 rounded-md">
@@ -1343,7 +1412,10 @@ const DiabetesPatientRegister: React.FC = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80 p-0 sm:max-w-sm">
+              <SheetContent
+                side="left"
+                className="w-80 p-0 sm:max-w-sm bg-white"
+              >
                 <StepperContent />
               </SheetContent>
             </Sheet>
@@ -1353,22 +1425,23 @@ const DiabetesPatientRegister: React.FC = () => {
           </div>
         </div>
 
-        <div className="hidden md:block h-screen bg-white w-1/4 min-w-[320px] border-r border-gray-200 overflow-y-auto shadow-lg">
+        <div className="hidden md:block min-h-[calc(100vh-5rem)] bg-white w-1/4 min-w-[320px] border-r border-gray-200 overflow-y-auto shadow-lg pt-8 md:pt-10">
           <StepperContent />
         </div>
 
-        <div className="flex-1 p-4 md:p-8 overflow-y-auto h-screen pt-20 md:pt-4">
+        <div className="flex-1 p-3 md:p-6 overflow-y-auto pt-16 md:pt-8">
           <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-6">
               <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden">
                 <CardHeader
                   className={cn(
                     "text-white rounded-t-2xl",
-                    steps[currentStep - 1]?.color || "bg-gradient-to-r from-blue-600 to-indigo-600",
-                    "p-6"
+                    steps[currentStep - 1]?.color ||
+                      "bg-gradient-to-r from-blue-600 to-indigo-600",
+                    "p-4",
                   )}
                 >
-                  <CardTitle className="flex items-center gap-3 text-xl">
+                  <CardTitle className="flex items-center gap-3 text-lg">
                     {React.createElement(steps[currentStep - 1]?.icon || User, {
                       className: "h-6 w-6",
                     })}
@@ -1378,9 +1451,7 @@ const DiabetesPatientRegister: React.FC = () => {
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
-                  {renderFormStep()}
-                </CardContent>
+                <CardContent className="p-4">{renderFormStep()}</CardContent>
               </Card>
 
               <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
@@ -1389,7 +1460,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   variant="outline"
                   onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
                   disabled={currentStep === 1}
-                  className="w-full sm:w-auto px-6 py-3 transition-all duration-200 h-12"
+                  className="w-full sm:w-auto px-6 py-2 transition-all duration-200 h-10 hover:bg-gray-100 hover:text-gray-900 border-gray-200"
                 >
                   ← Previous
                 </Button>
@@ -1398,7 +1469,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-200 h-12"
+                    className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-300 h-10 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5"
                   >
                     Next Step →
                   </Button>
@@ -1408,7 +1479,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white transition-all duration-200 h-12"
+                    className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white transition-all duration-200 h-10"
                   >
                     {isSubmitting ? (
                       <>
