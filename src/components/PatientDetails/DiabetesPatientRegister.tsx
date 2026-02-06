@@ -26,6 +26,10 @@ import {
   Phone,
   UserCheck,
   Menu,
+  Shield,
+  Stethoscope,
+  FileText,
+  CheckCircle,
 } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
@@ -239,7 +243,7 @@ const DiabetesPatientRegister: React.FC = () => {
     // if (!data.Hospital_name || !String(data.Hospital_name).trim())
     //   newErrors.Hospital_name = "Hospital name is required.";
     if (!data.assigned_doctor || !String(data.assigned_doctor).trim())
-      newErrors.assigned_doctor = "doctor name is required.";
+      newErrors.assigned_doctor = "Doctor name is required.";
     if (!data.Date_of_registration)
       newErrors.Date_of_registration = "Registration date is required.";
     return newErrors;
@@ -498,16 +502,21 @@ const DiabetesPatientRegister: React.FC = () => {
 
   const StepperContent = () => (
     <div className="space-y-4">
-      <div className="p-2 md:p-3 border-b border-gray-200">
-        <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-          Patient Registration
-        </h1>
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-600 rounded-lg">
+            <Shield className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Patient Registration
+          </h1>
+        </div>
         <p className="text-gray-600 text-sm mt-2">
           Complete all steps to register
         </p>
       </div>
-      <div className="p-2 md:p-2 border-b border-gray-100">
-        <div className="flex justify-between items-center">
+      <div className="p-4 border-b border-gray-100 bg-white">
+        <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-700">Progress</span>
           <span className="text-sm font-medium text-gray-700">
             {Math.round(progressPercentage)}%
@@ -516,10 +525,10 @@ const DiabetesPatientRegister: React.FC = () => {
 
         <Progress
           value={progressPercentage}
-          className="h-2 [&>div]:bg-green-600 bg-gray-200"
+          className="h-2.5 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-600 bg-gray-200 rounded-full"
         />
       </div>
-      <div className="p-2 md:p-2 space-y-2">
+      <div className="p-4 space-y-3">
         {steps.map((step) => {
           const Icon = step.icon;
           const isActive = currentStep === step.id;
@@ -532,29 +541,29 @@ const DiabetesPatientRegister: React.FC = () => {
                 setSidebarOpen(false);
               }}
               className={cn(
-                "flex items-start p-3 md:p-4 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50",
-                isActive && "bg-blue-50 border-l-4 border-blue-600",
-                isCompleted && "bg-green-50"
+                "flex items-start p-4 rounded-xl cursor-pointer transition-all duration-200 hover:bg-gray-50 border border-gray-100",
+                isActive && "bg-blue-50 border-blue-200 shadow-sm",
+                isCompleted && "bg-green-50 border-green-200"
               )}
             >
               <div
                 className={cn(
-                  "flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full mr-3 md:mr-4 transition-all duration-200",
-                  isActive && "bg-blue-600 text-white shadow-lg",
+                  "flex items-center justify-center w-10 h-10 rounded-full mr-4 transition-all duration-200",
+                  isActive && "bg-blue-600 text-white shadow-lg scale-110",
                   isCompleted && "bg-green-600 text-white",
                   !isActive && !isCompleted && "bg-gray-200 text-gray-600"
                 )}
               >
                 {isCompleted && !isActive ? (
-                  <Check className="h-4 w-4 md:h-5 md:w-5" />
+                  <Check className="h-5 w-5" />
                 ) : (
-                  <Icon className="h-4 w-4 md:h-5 md:w-5" />
+                  <Icon className="h-5 w-5" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <h3
                   className={cn(
-                    "text-sm font-medium transition-colors duration-200",
+                    "text-base font-semibold transition-colors duration-200",
                     isActive && "text-blue-900",
                     isCompleted && "text-green-900",
                     !isActive && !isCompleted && "text-gray-700"
@@ -562,11 +571,60 @@ const DiabetesPatientRegister: React.FC = () => {
                 >
                   {step.title}
                 </h3>
-                <p className="text-xs text-gray-500 mt-1">{step.description}</p>
+                <p className="text-sm text-gray-500 mt-1">{step.description}</p>
+              </div>
+              <div className={cn(
+                "text-xs px-2 py-1 rounded-full",
+                isActive ? "bg-blue-100 text-blue-800" :
+                isCompleted ? "bg-green-100 text-green-800" :
+                "bg-gray-100 text-gray-500"
+              )}>
+                {step.id}/4
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Avatar dropdown at the bottom of the sidebar */}
+      <div className="p-4 border-t border-gray-100 bg-white">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full flex items-center justify-start gap-3">
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <User className="h-4 w-4 text-blue-600" />
+              </div>
+              <span>Account</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-full">
+            <DropdownMenuItem onClick={() => navigate('/')}>
+              <Building2 className="h-4 w-4 mr-2" />
+              Home
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+              <Activity className="h-4 w-4 mr-2" />
+              Dashboard
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/patients')}>
+              <User className="h-4 w-4 mr-2" />
+              Patients
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/analysis')}>
+              <Heart className="h-4 w-4 mr-2" />
+              Analysis
+            </DropdownMenuItem>
+            <hr className="my-1" />
+            <DropdownMenuItem onClick={() => navigate('/profile')}>
+              <UserCheck className="h-4 w-4 mr-2" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-red-600 focus:bg-red-50">
+              <User className="h-4 w-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
@@ -577,42 +635,44 @@ const DiabetesPatientRegister: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* NEW: Register Mode Toggle */}
-            <div className="flex items-center gap-3">
-              <div className="text-sm font-medium">Registration Type:</div>
-              <div className="flex gap-2">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+              <div className="text-sm font-medium text-gray-700 mb-3">Registration Type:</div>
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setRegisterMode("new")}
                   className={cn(
-                    "px-3 py-1 rounded-md border",
+                    "px-4 py-3 rounded-lg border transition-all duration-200 flex items-center gap-2 min-w-[140px] text-center",
                     registerMode === "new"
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700"
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                      : "bg-white text-gray-700 hover:bg-blue-50"
                   )}
                 >
-                  New Patient
+                  <User className="h-4 w-4 mx-auto" />
+                  <span>New Patient</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setRegisterMode("op")}
                   className={cn(
-                    "px-3 py-1 rounded-md border",
+                    "px-4 py-3 rounded-lg border transition-all duration-200 flex items-center gap-2 min-w-[140px] text-center",
                     registerMode === "op"
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-700"
+                      ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
+                      : "bg-white text-gray-700 hover:bg-indigo-50"
                   )}
                 >
-                  OP / Existing Patient
+                  <FileText className="h-4 w-4 mx-auto" />
+                  <span>OP / Existing Patient</span>
                 </button>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                {registerMode === "new"
+                  ? "Register a brand new patient. No patient_id required."
+                  : "Link this visit to an existing patient by entering their patient_id (required)."}
+              </p>
             </div>
-            <p className="text-xs text-gray-500">
-              {registerMode === "new"
-                ? "Register a brand new patient. No patient_id required."
-                : "Link this visit to an existing patient by entering their patient_id (required)."}
-            </p>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-5">
               {/* patient_id input shows only for OP mode */}
               {registerMode === "op" && (
                 <div className="space-y-2">
@@ -620,9 +680,7 @@ const DiabetesPatientRegister: React.FC = () => {
                     htmlFor="patient_id"
                     className="text-sm font-medium text-gray-700 flex items-center gap-2"
                   >
-                    {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                      *
-                    </Badge> */}
+                    <FileText className="h-4 w-4 text-indigo-600" />
                     Patient ID (Existing)
                   </label>
                   <Input
@@ -632,8 +690,8 @@ const DiabetesPatientRegister: React.FC = () => {
                     onChange={handleChange}
                     placeholder="Enter existing patient ID (numeric)"
                     className={cn(
-                      "transition-all duration-200",
-                      errors.patient_id && "border-red-500 focus:border-red-500"
+                      "transition-all duration-200 h-12",
+                      errors.patient_id && "border-red-500 focus:border-red-500 focus:ring-red-500"
                     )}
                   />
                   {errors.patient_id && (
@@ -650,9 +708,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   htmlFor="name"
                   className="text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                  {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                    *
-                  </Badge> */}
+                  <User className="h-4 w-4 text-blue-600" />
                   Full Name
                 </label>
                 <Input
@@ -661,8 +717,8 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200",
-                    errors.name && "border-red-500 focus:border-red-500"
+                    "transition-all duration-200 h-12",
+                    errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500"
                   )}
                   placeholder="Enter patient's full name"
                 />
@@ -674,15 +730,13 @@ const DiabetesPatientRegister: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <label
                     htmlFor="age"
                     className="text-sm font-medium text-gray-700 flex items-center gap-2"
                   >
-                    {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                      *
-                    </Badge> */}
+                    <User className="h-4 w-4 text-green-600" />
                     Age
                   </label>
                   <Input
@@ -693,8 +747,8 @@ const DiabetesPatientRegister: React.FC = () => {
                     onChange={handleChange}
                     step="1"
                     className={cn(
-                      "transition-all duration-200",
-                      errors.age && "border-red-500 focus:border-red-500"
+                      "transition-all duration-200 h-12",
+                      errors.age && "border-red-500 focus:border-red-500 focus:ring-red-500"
                     )}
                     placeholder="Enter age in years"
                   />
@@ -711,9 +765,7 @@ const DiabetesPatientRegister: React.FC = () => {
                     htmlFor="gender"
                     className="text-sm font-medium text-gray-700 flex items-center gap-2"
                   >
-                    {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                      *
-                    </Badge> */}
+                    <User className="h-4 w-4 text-purple-600" />
                     Gender
                   </label>
                   <div>
@@ -722,16 +774,16 @@ const DiabetesPatientRegister: React.FC = () => {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full h-10 px-3 py-2 rounded-md border border-input bg-background text-sm shadow-sm",
+                            "w-full h-12 px-3 py-2 rounded-lg border border-input bg-background text-sm shadow-sm flex items-center justify-between",
                             !formData.gender && "text-muted-foreground",
-                            errors.gender && "border-red-500 focus:ring-red-500"
+                            errors.gender && "border-red-500 focus:border-red-500 focus:ring-red-500"
                           )}
                         >
-                          {formData.gender || "Select gender"}
-                          <ChevronDown className="h-4 w-4 opacity-50 ml-2" />
+                          <span className="truncate">{formData.gender || "Select gender"}</span>
+                          <ChevronDown className="h-4 w-4 opacity-50 ml-2 flex-shrink-0" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white shadow-md border mt-1 z-50">
+                      <DropdownMenuContent className="w-full bg-white shadow-lg border mt-1 z-50">
                         {["Male", "Female", "Other"].map((option) => (
                           <DropdownMenuItem
                             key={option}
@@ -741,7 +793,7 @@ const DiabetesPatientRegister: React.FC = () => {
                                 gender: option,
                               }))
                             }
-                            className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100"
+                            className="cursor-pointer px-3 py-2 text-sm hover:bg-blue-50 transition-colors"
                           >
                             {option}
                           </DropdownMenuItem>
@@ -749,7 +801,7 @@ const DiabetesPatientRegister: React.FC = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                     {errors.gender && (
-                      <p className="text-red-500 text-sm flex items-center gap-1">
+                      <p className="text-red-500 text-sm flex items-center gap-1 mt-1">
                         <AlertCircle className="h-4 w-4" />
                         {errors.gender}
                       </p>
@@ -763,10 +815,7 @@ const DiabetesPatientRegister: React.FC = () => {
                   htmlFor="mobile_number"
                   className="text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                  {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                    *
-                  </Badge> */}
-                  <Phone className="h-4 w-4" />
+                  <Phone className="h-4 w-4 text-green-600" />
                   Mobile Number
                 </label>
                 <Input
@@ -776,9 +825,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.mobile_number}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200",
+                    "transition-all duration-200 h-12",
                     errors.mobile_number &&
-                      "border-red-500 focus:border-red-500"
+                      "border-red-500 focus:border-red-500 focus:ring-red-500"
                   )}
                   placeholder="Enter mobile number"
                 />
@@ -796,7 +845,15 @@ const DiabetesPatientRegister: React.FC = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Stethoscope className="h-5 w-5 text-green-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Clinical Data</h3>
+              </div>
+              <p className="text-sm text-gray-600">Please enter accurate medical test results</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
                 {
                   id: "HbA1c_Level",
@@ -850,9 +907,9 @@ const DiabetesPatientRegister: React.FC = () => {
                     value={formData[id as keyof typeof formData] as string}
                     onChange={handleChange}
                     className={cn(
-                      "transition-all duration-200 hover:border-green-300 focus:border-green-500",
+                      "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
                       errors[id as keyof FormErrors] &&
-                        "border-red-500 focus:border-red-500"
+                        "border-red-500 focus:border-red-500 focus:ring-red-500"
                     )}
                     placeholder={`Enter ${label.toLowerCase()}`}
                   />
@@ -871,46 +928,54 @@ const DiabetesPatientRegister: React.FC = () => {
                   <Heart className="h-4 w-4 text-green-600" />
                   Blood Pressure (mmHg)
                 </label>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    step="1"
-                    name="Blood_Pressure_Systolic"
-                    value={formData.Blood_Pressure_Systolic}
-                    onChange={handleChange}
-                    placeholder="Systolic"
-                    className={cn(
-                      "w-1/2 transition-all duration-200 hover:border-green-300 focus:border-green-500",
-                      errors.Blood_Pressure_Systolic &&
-                        "border-red-500 focus:border-red-500"
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Input
+                      type="number"
+                      step="1"
+                      name="Blood_Pressure_Systolic"
+                      value={formData.Blood_Pressure_Systolic}
+                      onChange={handleChange}
+                      placeholder="Systolic"
+                      className={cn(
+                        "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                        errors.Blood_Pressure_Systolic &&
+                          "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      )}
+                    />
+                    {errors.Blood_Pressure_Systolic && (
+                      <p className="text-red-500 text-xs flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.Blood_Pressure_Systolic}
+                      </p>
                     )}
-                  />
-                  <Input
-                    type="number"
-                    step="1"
-                    name="Blood_Pressure_Diastolic"
-                    value={formData.Blood_Pressure_Diastolic}
-                    onChange={handleChange}
-                    placeholder="Diastolic"
-                    className={cn(
-                      "w-1/2 transition-all duration-200 hover:border-green-300 focus:border-green-500",
-                      errors.Blood_Pressure_Diastolic &&
-                        "border-red-500 focus:border-red-500"
+                  </div>
+                  <div className="space-y-1">
+                    <Input
+                      type="number"
+                      step="1"
+                      name="Blood_Pressure_Diastolic"
+                      value={formData.Blood_Pressure_Diastolic}
+                      onChange={handleChange}
+                      placeholder="Diastolic"
+                      className={cn(
+                        "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
+                        errors.Blood_Pressure_Diastolic &&
+                          "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      )}
+                    />
+                    {errors.Blood_Pressure_Diastolic && (
+                      <p className="text-red-500 text-xs flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.Blood_Pressure_Diastolic}
+                      </p>
                     )}
-                  />
+                  </div>
                 </div>
-                {(errors.Blood_Pressure_Systolic ||
-                  errors.Blood_Pressure_Diastolic) && (
-                  <p className="text-red-500 text-sm flex items-center gap-1">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.Blood_Pressure_Systolic ||
-                      errors.Blood_Pressure_Diastolic}
-                  </p>
-                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label
                   htmlFor="Duration_of_Diabetes"
@@ -927,9 +992,9 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.Duration_of_Diabetes}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200 hover:border-green-300 focus:border-green-500",
+                    "transition-all duration-200 h-12 hover:border-green-300 focus:border-green-500 focus:ring-green-500",
                     errors.Duration_of_Diabetes &&
-                      "border-red-500 focus:border-red-500"
+                      "border-red-500 focus:border-red-500 focus:ring-red-500"
                   )}
                   placeholder="Years with diabetes"
                 />
@@ -953,10 +1018,10 @@ const DiabetesPatientRegister: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-between text-left font-normal transition-all duration-200 hover:border-green-300"
+                      className="w-full h-12 justify-between text-left font-normal transition-all duration-200 hover:border-green-300 flex items-center"
                     >
-                      {formData.Visual_Acuity}
-                      <ChevronDown className="h-4 w-4 opacity-50" />
+                      <span className="truncate">{formData.Visual_Acuity}</span>
+                      <ChevronDown className="h-4 w-4 opacity-50 flex-shrink-0 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full bg-white shadow-lg border">
@@ -970,7 +1035,7 @@ const DiabetesPatientRegister: React.FC = () => {
                               Visual_Acuity: option,
                             }))
                           }
-                          className="cursor-pointer hover:bg-gray-50"
+                          className="cursor-pointer hover:bg-green-50 transition-colors"
                         >
                           {option}
                         </DropdownMenuItem>
@@ -986,13 +1051,21 @@ const DiabetesPatientRegister: React.FC = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-3 ">
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Building2 className="h-5 w-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Administrative Details</h3>
+              </div>
+              <p className="text-sm text-gray-600">Hospital and registration information</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5">
               {/* <div className="space-y-2">
                 <label
                   htmlFor="Hospital_name"
                   className="text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                
+
                   <Building2 className="h-4 w-4 text-purple-600" />
                   Hospital Name
                 </label>
@@ -1022,9 +1095,6 @@ const DiabetesPatientRegister: React.FC = () => {
                   htmlFor="Date_of_registration"
                   className="text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                  {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                    *
-                  </Badge> */}
                   <Calendar className="h-4 w-4 text-purple-600" />
                   Date of Registration
                 </label>
@@ -1033,10 +1103,10 @@ const DiabetesPatientRegister: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal transition-all duration-200",
+                        "w-full h-12 justify-start text-left font-normal transition-all duration-200",
                         !formData.Date_of_registration &&
                           "text-muted-foreground",
-                        errors.Date_of_registration && "border-red-500"
+                        errors.Date_of_registration && "border-red-500 focus:ring-red-500"
                       )}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
@@ -1076,14 +1146,11 @@ const DiabetesPatientRegister: React.FC = () => {
 
               <div className="space-y-2">
                 <label
-                  htmlFor="Hospital_name"
+                  htmlFor="assigned_doctor"
                   className="text-sm font-medium text-gray-700 flex items-center gap-2"
                 >
-                  {/* <Badge variant="destructive" className="px-1 py-0 text-xs">
-                    *
-                  </Badge> */}
-                  <Building2 className="h-4 w-4 text-purple-600" />
-                  assigned_doctor
+                  <User className="h-4 w-4 text-purple-600" />
+                  Assigned Doctor
                 </label>
                 <Input
                   type="text"
@@ -1092,18 +1159,18 @@ const DiabetesPatientRegister: React.FC = () => {
                   value={formData.assigned_doctor}
                   onChange={handleChange}
                   className={cn(
-                    "transition-all duration-200"
-                    // errors.assigned_doctor &&
-                    //   "border-red-500 focus:border-red-500"
+                    "transition-all duration-200 h-12",
+                    errors.assigned_doctor &&
+                      "border-red-500 focus:border-red-500 focus:ring-red-500"
                   )}
-                  placeholder="Enter hospital name"
+                  placeholder="Enter doctor's name"
                 />
-                {/* {errors.Hospital_name && (
+                {errors.assigned_doctor && (
                   <p className="text-red-500 text-sm flex items-center gap-1">
                     <AlertCircle className="h-4 w-4" />
-                    {errors.Hospital_name}
+                    {errors.assigned_doctor}
                   </p>
-                )} */}
+                )}
               </div>
             </div>
           </div>
@@ -1111,115 +1178,133 @@ const DiabetesPatientRegister: React.FC = () => {
 
       case 4:
         return (
-          <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h3 className="font-semibold text-blue-900 mb-3">
-                Patient Summary
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <strong>Name:</strong> {formData.name || "N/A"}
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="h-5 w-5 text-orange-600" />
+                <h3 className="text-lg font-semibold text-gray-800">Review & Submit</h3>
+              </div>
+              <p className="text-sm text-gray-600">Please review all information before submitting</p>
+            </div>
+
+            <div className="space-y-5">
+              <div className="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Patient Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Name:</span>
+                    <span>{formData.name || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Age:</span>
+                    <span>{formData.age || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Gender:</span>
+                    <span>{formData.gender || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Mobile:</span>
+                    <span>{formData.mobile_number || "N/A"}</span>
+                  </div>
                 </div>
-                <div>
-                  <strong>Age:</strong> {formData.age || "N/A"}
+              </div>
+
+              <div className="bg-green-50 p-5 rounded-xl border border-green-200">
+                <h3 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  Clinical Data
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">HbA1c:</span>
+                    <span>{formData.HbA1c_Level ? `${formData.HbA1c_Level}%` : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Fasting Glucose:</span>
+                    <span>{formData.Fasting_Blood_Glucose
+                      ? `${formData.Fasting_Blood_Glucose} mg/dL`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Systolic BP:</span>
+                    <span>{formData.Blood_Pressure_Systolic
+                      ? `${formData.Blood_Pressure_Systolic} mmHg`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Diastolic BP:</span>
+                    <span>{formData.Blood_Pressure_Diastolic
+                      ? `${formData.Blood_Pressure_Diastolic} mmHg`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Cholesterol:</span>
+                    <span>{formData.Cholesterol
+                      ? `${formData.Cholesterol} mg/dL`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">BMI:</span>
+                    <span>{formData.BMI ? `${formData.BMI} kg/m²` : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Albuminuria:</span>
+                    <span>{formData.Albuminuria
+                      ? `${formData.Albuminuria} mg/dL`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Diabetes Duration:</span>
+                    <span>{formData.Duration_of_Diabetes
+                      ? `${formData.Duration_of_Diabetes} years`
+                      : "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Visual Acuity:</span>
+                    <span>{formData.Visual_Acuity || "N/A"}</span>
+                  </div>
                 </div>
-                <div>
-                  <strong>Gender:</strong> {formData.gender || "N/A"}
-                </div>
-                <div className="sm:col-span-2">
-                  <strong>Mobile:</strong> {formData.mobile_number || "N/A"}
+              </div>
+
+              <div className="bg-purple-50 p-5 rounded-xl border border-purple-200">
+                <h3 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Administrative Details
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Assigned Doctor:</span>
+                    <span>{formData.assigned_doctor || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Registration Date:</span>
+                    <span>{formData.Date_of_registration
+                      ? format(formData.Date_of_registration, "PPP")
+                      : "N/A"}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <h3 className="font-semibold text-green-900 mb-3">
-                Clinical Data
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <strong>HbA1c:</strong>{" "}
-                  {formData.HbA1c_Level ? `${formData.HbA1c_Level}%` : "N/A"}
-                </div>
-                <div>
-                  <strong>Fasting Glucose:</strong>{" "}
-                  {formData.Fasting_Blood_Glucose
-                    ? `${formData.Fasting_Blood_Glucose} mg/dL`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>Systolic BP:</strong>{" "}
-                  {formData.Blood_Pressure_Systolic
-                    ? `${formData.Blood_Pressure_Systolic} mmHg`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>Diastolic BP:</strong>{" "}
-                  {formData.Blood_Pressure_Diastolic
-                    ? `${formData.Blood_Pressure_Diastolic} mmHg`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>Cholesterol:</strong>{" "}
-                  {formData.Cholesterol
-                    ? `${formData.Cholesterol} mg/dL`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>BMI:</strong>{" "}
-                  {formData.BMI ? `${formData.BMI} kg/m²` : "N/A"}
-                </div>
-                <div>
-                  <strong>Albuminuria:</strong>{" "}
-                  {formData.Albuminuria
-                    ? `${formData.Albuminuria} mg/dL`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>Diabetes Duration:</strong>{" "}
-                  {formData.Duration_of_Diabetes
-                    ? `${formData.Duration_of_Diabetes} years`
-                    : "N/A"}
-                </div>
-                <div>
-                  <strong>Visual Acuity:</strong>{" "}
-                  {formData.Visual_Acuity || "N/A"}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <h3 className="font-semibold text-purple-900 mb-3">
-                Administrative Details
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <strong>Hospital:</strong> {formData.Hospital_name || "N/A"}
-                </div>
-                <div>
-                  <strong>Registration Date:</strong>{" "}
-                  {formData.Date_of_registration
-                    ? format(formData.Date_of_registration, "PPP")
-                    : "N/A"}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center p-4 bg-gray-50 rounded-lg mt-6">
+            <div className="flex items-center justify-center p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl mt-6">
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 disabled:transform-none disabled:opacity-50"
+                className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 disabled:transform-none disabled:opacity-50 h-12"
                 onClick={handleSubmit}
               >
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Saving...
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Processing...
                   </>
                 ) : (
                   <>
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-5 w-5 mr-2" />
                     Register Patient
                   </>
                 )}
@@ -1241,72 +1326,101 @@ const DiabetesPatientRegister: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="flex h-screen w-full">
+      <div className="flex flex-col md:flex-row h-screen w-full">
         <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
           <div className="flex items-center justify-between p-4">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Patient Registration
-            </h1>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-blue-600 rounded-md">
+                <Shield className="h-5 w-5 text-white" />
+              </div>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Patient Registration
+              </h1>
+            </div>
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="h-4 w-4" />
+                <Button variant="outline" size="icon" className="h-10 w-10">
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80 p-0">
+              <SheetContent side="left" className="w-80 p-0 sm:max-w-sm">
                 <StepperContent />
               </SheetContent>
             </Sheet>
           </div>
-          <div className="px-2 pb-2">
-            <Progress value={progressPercentage} className="h-1" />
+          <div className="px-4 pb-2">
+            <Progress value={progressPercentage} className="h-2" />
           </div>
         </div>
 
-        <div className="hidden md:block h-screen bg-white w-1/5 min-w-[300px] border-r border-gray-200 overflow-y-auto">
+        <div className="hidden md:block h-screen bg-white w-1/4 min-w-[320px] border-r border-gray-200 overflow-y-auto shadow-lg">
           <StepperContent />
         </div>
 
         <div className="flex-1 p-4 md:p-8 overflow-y-auto h-screen pt-20 md:pt-4">
           <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <Card className="animate-fade-in shadow-lg">
+              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden">
                 <CardHeader
                   className={cn(
-                    "text-white rounded-t-lg",
-                    steps[currentStep - 1]?.color || "bg-blue-600"
+                    "text-white rounded-t-2xl",
+                    steps[currentStep - 1]?.color || "bg-gradient-to-r from-blue-600 to-indigo-600",
+                    "p-6"
                   )}
                 >
-                  <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <CardTitle className="flex items-center gap-3 text-xl">
                     {React.createElement(steps[currentStep - 1]?.icon || User, {
-                      className: "h-5 w-5",
+                      className: "h-6 w-6",
                     })}
                     {steps[currentStep - 1]?.title}
+                    <span className="ml-auto text-sm font-normal bg-white/20 px-3 py-1 rounded-full">
+                      Step {currentStep} of {totalSteps}
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 md:p-2">
+                <CardContent className="p-6">
                   {renderFormStep()}
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col sm:flex-row justify-between gap-3 ">
+              <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
                   disabled={currentStep === 1}
-                  className="w-full sm:w-auto px-6 py-2 transition-all duration-200"
+                  className="w-full sm:w-auto px-6 py-3 transition-all duration-200 h-12"
                 >
-                  Previous
+                  ← Previous
                 </Button>
 
                 {currentStep < totalSteps && (
                   <Button
                     type="button"
                     onClick={handleNextStep}
-                    className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
+                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-200 h-12"
                   >
-                    Next Step
+                    Next Step →
+                  </Button>
+                )}
+
+                {currentStep === totalSteps && (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white transition-all duration-200 h-12"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        Submit Registration
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
